@@ -1,0 +1,154 @@
+:root {
+  --sidebar-bg-gradient: linear-gradient(135deg, #1f4061, #041e2d);
+  --menu-title: #dedede;
+  --menu-title-hover: white;
+  --menu-active-color: white;
+  --menu-active-hover-color: black;
+  --menu-active-background-color: #284d71;
+  --kt-primary: #336699;
+  --kt-primary-active: #224466;
+}
+body {
+  overflow: scroll; /* Allow scrolling */
+}
+
+body::-webkit-scrollbar {
+  display: none; /* Hides the scrollbar */
+}
+
+html {
+  -ms-overflow-style: none;  /* For IE and Edge */
+  scrollbar-width: none;  /* For Firefox */
+}
+
+
+
+/* Side Menu CSS */
+#kt_app_sidebar_menu_wrapper {
+  margin: 0px !important;
+}
+
+.app-sidebar {
+  background: var(--sidebar-bg-gradient) !important;
+}
+
+.app-sidebar .app-sidebar-logo{
+  border-bottom:1px dashed white !important;
+}
+
+.app-header.sticky-top{
+  z-index: 99;
+}
+
+.app-sidebar .menu .menu-item .menu-link.active {
+  background-color:var(--menu-active-background-color) !important;
+}
+
+.app-sidebar .menu .menu-item .menu-link.active .menu-bullet .bullet{
+  background-color: var(--menu-active-color) !important;
+}
+
+.app-sidebar .menu .menu-item .menu-link.active .menu-title{
+  color: var(--menu-active-color) !important;
+}
+
+.app-sidebar .menu .menu-item .menu-link.active .menu-title:hover{
+  color: var(--menu-active-color) !important;
+}
+
+.app-sidebar .menu .menu-item .menu-link .menu-title{
+  color: var(--menu-title) !important;
+}
+
+.app-sidebar .menu .menu-item .menu-link .menu-title:hover{
+  color: var(--menu-title-hover) !important;
+}
+
+
+
+.app-sidebar .menu{
+  padding: 0px !important;
+  padding-left: 8px !important;
+  margin:0px;
+}
+
+.app-sidebar .menu-item .menu-content{
+  padding: 0rem 0rem;
+  margin-top: -10px;
+}
+
+.app-sidebar .menu-section{
+  margin: 0px 0px 0px 15px;
+  padding: 0px;
+}
+
+
+.app-sidebar .hover-scroll-overlay-y{
+  scrollbar-color:#336699 transparent !important;
+}
+
+
+
+
+/* Logo Stylesheets */
+
+.app-sidebar-logo-default{
+  width: 75px;
+  padding: 10px;
+  height: 100% !important;
+}
+
+
+.app-sidebar-logo-minimize{
+  width: 40px;
+  padding: 0px;
+  height: 100% !important;
+}
+
+
+
+
+
+/* Extra Large xxl */
+@media only screen and (max-width: 1399.98px) {
+      
+}
+
+
+
+/* Extra Large xl */
+@media only screen and (max-width: 1200px) {
+
+}
+
+
+/* Large l */
+@media only screen and (max-width: 992px) {
+  .app-header{
+    display:inline-grid;
+  }
+
+  .cp_mobile_logo{
+    width: 70px;
+    height: 100% !important;
+  }
+  
+}
+
+
+/* medium md */
+@media only screen and (max-width: 767px) {
+   
+}
+
+
+/* small sm */
+@media only screen and (max-width: 576px) {
+
+}
+
+
+/* extra small xs */
+@media only screen and (max-width: 410px) {
+
+}
