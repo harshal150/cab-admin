@@ -2,7 +2,7 @@
   "name": "SUPER_ADMIN",
   "version": "8.1.5",
   "private": true,
-  "homepage": "/",
+  "homepage": "/admin",
   "dependencies": {
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",
