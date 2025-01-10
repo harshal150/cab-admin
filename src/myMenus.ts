@@ -37,21 +37,21 @@ export const menus: MenuGroup[] = [
         name: 'All Rides',
         svg_location: 'general',
         icon: 'gen024',
-        route: '',
+        route: 'rides/allrides',
       
       },
       {
         name: 'Current Rides',
         svg_location: 'files',
         icon: 'fil011',
-        route: '',
+        route: 'rides/currentrides',
        
       },
       {
         name: 'MIS Reports',
         svg_location: 'abstract',
         icon: 'abs045',
-        route: 'my-services'
+        route: 'reportspage/reports'
       },
       {
         name: 'Customers',

@@ -23,6 +23,8 @@ import HistoryPage from '../modules/settlementreports/HistoryPage'
 import PayerPage from '../modules/payer/PayerPage'
 import CabsPage from '../modules/cabs/CabsPage'
 import DriversPage from '../modules/Drivers/DriversPage'
+import RidesPage from '../modules/rides/RidesPage'
+import ReportPage from '../modules/reports/ReportPage'
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import('../modules/profile/ProfilePage'))
   const WizardsPage = lazy(() => import('../modules/wizards/WizardsPage'))
@@ -43,6 +45,27 @@ const PrivateRoutes = () => {
             <>
               {/* <SuspensedView> */}
               <CabsPage />
+              {/* </SuspensedView> */}
+            </>
+          }
+        />
+
+<Route
+          path='rides/*'
+          element={
+            <>
+              {/* <SuspensedView> */}
+              <RidesPage />
+              {/* </SuspensedView> */}
+            </>
+          }
+        />
+<Route
+          path='reportspage/*'
+          element={
+            <>
+              {/* <SuspensedView> */}
+              <ReportPage />
               {/* </SuspensedView> */}
             </>
           }
