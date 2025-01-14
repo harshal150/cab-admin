@@ -7,20 +7,7 @@ import { MenuTestPage } from '../pages/MenuTestPage'
 import { getCSSVariableValue } from '../../_metronic/assets/ts/_utils'
 import { WithChildren } from '../../_metronic/helpers'
 import BuilderPageWrapper from '../pages/layout-builder/BuilderPageWrapper'
-import InvoicesPage from '../modules/invoices/InvoicesPage'
-import MerchantPage from '../modules/merchant/MerchantPage'
-import IndustryPage from '../modules/industry/IndustryPage'
-import SegmentPage from '../modules/segment/SegmentPage'
-import ServicePage from '../modules/service/ServicePage'
-import PlanPage from '../modules/plan/PlanPage'
-import AllInvoicesPage from '../modules/invoicesall/AllInvoicesPage'
-import OutstandingPage from '../modules/outstanding/OutStandingPage'
-import CollectPaymentPage from '../modules/collectpayment/CollectPaymentPage'
-import ApplicationPage from '../modules/applicationform/ApplicationPage'
-import TransactionsPage from '../modules/transactionreports/TransactionsPage'
-import ExpectedPage from '../modules/settlementreports/ExpectedPage'
-import HistoryPage from '../modules/settlementreports/HistoryPage'
-import PayerPage from '../modules/payer/PayerPage'
+
 import CabsPage from '../modules/cabs/CabsPage'
 import DriversPage from '../modules/Drivers/DriversPage'
 import RidesPage from '../modules/rides/RidesPage'
@@ -84,137 +71,13 @@ const PrivateRoutes = () => {
 
 
         {/* Pages */}
-        <Route
-          path='invoice/*'
-          element={
-            <>
-              {/* <SuspensedView> */}
-              <InvoicesPage />
-              {/* </SuspensedView> */}
-            </>
-          }
-        />
-        <Route
-          path='all-invoice/*'
-          element={
-            <>
-              {/* <SuspensedView> */}
-              <AllInvoicesPage />
-              {/* </SuspensedView> */}
-            </>
-          }
-        />
-        <Route
-          path='outstanding/*'
-          element={
-            <>
-              {/* <SuspensedView> */}
-              <OutstandingPage />
-              {/* </SuspensedView> */}
-            </>
-          }
-        />
-        <Route
-          path='payment/*'
-          element={
-            <>
-              {/* <SuspensedView> */}
-              <CollectPaymentPage />
-              {/* </SuspensedView> */}
-            </>
-          }
-        />
-        <Route
-          path='form/*'
-          element={
-            <>
-              {/* <SuspensedView> */}
-              <ApplicationPage />
-              {/* </SuspensedView> */}
-            </>
-          }
-        />
-        <Route
-          path='reports/*'
-          element={
-            <>
-              {/* <SuspensedView> */}
-              <TransactionsPage />
-              {/* </SuspensedView> */}
-            </>
-          }
-        />
-        <Route
-          path='expected/*'
-          element={
-            <>
-              {/* <SuspensedView> */}
-              <ExpectedPage />
-              {/* </SuspensedView> */}
-            </>
-          }
-        />
-        <Route
-          path='settlement/*'
-          element={
-            <>
-              {/* <SuspensedView> */}
-              <HistoryPage />
-              {/* </SuspensedView> */}
-            </>
-          }
-        />
-        <Route
-          path='payer/*'
-          element={
-            <>
-              {/* <SuspensedView> */}
-              <PayerPage />
-              {/* </SuspensedView> */}
-            </>
-          }
-        />
-        <Route
-          path='merchant/*'
-          element={
-            <>
-              {/* <SuspensedView> */}
-              <MerchantPage />
-              {/* </SuspensedView> */}
-            </>
-          }
-        />
-        <Route
-          path='industry/*'
-          element={
-            <>
-              {/* <SuspensedView> */}
-              <IndustryPage />
-              {/* </SuspensedView> */}
-            </>
-          }
-        />
-        <Route path='segment/*' element={
-          <>
-            {/* <SuspensedView> */}
-            <SegmentPage />
-            {/* </SuspensedView> */}
-          </>
-        } />
-        <Route path='service/*' element={
-          <>
-            {/* <SuspensedView> */}
-            <ServicePage />
-            {/* </SuspensedView> */}
-          </>
-        } />
-        <Route path='plan/*' element={
-          <>
-            {/* <SuspensedView> */}
-            <PlanPage />
-            {/* </SuspensedView> */}
-          </>
-        } />
+       
+    
+       
+       
+       
+       
+      
         <Route path='dashboard' element={<DashboardWrapper />} />
         <Route path='builder' element={<BuilderPageWrapper />} />
         <Route path='menu-test' element={<MenuTestPage />} />
