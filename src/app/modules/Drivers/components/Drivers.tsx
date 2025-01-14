@@ -39,8 +39,8 @@ const DriversList: FC = () => {
     const fetchDriversAndCabs = async () => {
       try {
         const [driversResponse, cabsResponse] = await Promise.all([
-          axios.get('http://cabapi.payplatter.in/api/drivers'),
-          axios.get('http://cabapi.payplatter.in/api/cars'),
+          axios.get('https://cabapi.payplatter.in/api/drivers'),
+          axios.get('https://cabapi.payplatter.in/api/cars'),
         ]);
         setDrivers(driversResponse.data);
         setFilteredDrivers(driversResponse.data);
@@ -102,7 +102,7 @@ const DriversList: FC = () => {
         assigned_cab_id: selectedCab ? selectedCab.id : null,
       };
   
-      await axios.post('http://cabapi.payplatter.in/api/drivers', payload);
+      await axios.post('https://cabapi.payplatter.in/api/drivers', payload);
   
       // Trigger refresh to fetch updated data
       setRefresh((prev) => !prev);
@@ -140,7 +140,7 @@ const DriversList: FC = () => {
         assigned_cab_id: selectedCab ? selectedCab.id : null,
       };
   
-      await axios.put(`http://cabapi.payplatter.in/api/drivers/${currentDriver.id}`, payload);
+      await axios.put(`https://cabapi.payplatter.in/api/drivers/${currentDriver.id}`, payload);
   
       // Trigger refresh to fetch updated data
       setRefresh((prev) => !prev);
@@ -157,7 +157,7 @@ const DriversList: FC = () => {
   const handleDeleteDriver = async (id: number) => {
     try {
       // Call the delete API endpoint with the driver ID
-      await axios.delete(`http://cabapi.payplatter.in/api/drivers/${id}`);
+      await axios.delete(`https://cabapi.payplatter.in/api/drivers/${id}`);
   
       // Update the state to remove the deleted driver
       setDrivers((prev) => prev.filter((driver) => driver.id !== id));

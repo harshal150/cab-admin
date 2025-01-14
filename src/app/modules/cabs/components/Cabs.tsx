@@ -31,7 +31,7 @@ const CabsList: FC = () => {
   useEffect(() => {
     const fetchCabs = async () => {
       try {
-        const response = await axios.get('http://cabapi.payplatter.in/api/cars');
+        const response = await axios.get('https://cabapi.payplatter.in/api/cars');
         setCabs(response.data);
         setFilteredCabs(response.data);
       } catch (error) {
@@ -84,7 +84,7 @@ const CabsList: FC = () => {
   // Add new cab
   const handleAddNewCab = async () => {
     try {
-      await axios.post('http://cabapi.payplatter.in/api/cars', newCab);
+      await axios.post('https://cabapi.payplatter.in/api/cars', newCab);
   
       // Trigger refresh
       setRefresh((prev) => !prev);
@@ -115,7 +115,7 @@ const CabsList: FC = () => {
     if (!currentCab) return;
   
     try {
-      await axios.put(`http://cabapi.payplatter.in/api/cars/${currentCab.id}`, currentCab);
+      await axios.put(`https://cabapi.payplatter.in/api/cars/${currentCab.id}`, currentCab);
   
       // Trigger refresh
       setRefresh((prev) => !prev);
@@ -129,7 +129,7 @@ const CabsList: FC = () => {
   
   const handleDeleteCar = async (id: number) => {
     try {
-      await axios.delete(`http://cabapi.payplatter.in/api/cars/${id}`);
+      await axios.delete(`https://cabapi.payplatter.in/api/cars/${id}`);
   
       // Trigger refresh
       setRefresh((prev) => !prev);
