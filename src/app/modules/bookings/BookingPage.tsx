@@ -1,12 +1,13 @@
 import { Navigate, Route, Routes, Outlet } from 'react-router-dom'
 import { PageLink, PageTitle } from '../../../_metronic/layout/core'
 import { Tables } from '../widgets/components/Tables'
-import {CompletedRides} from './components/CompletedRides'
-import { CurrentRides } from './components/CurrentRides'
+// import { AllRides } from './components/AllRides'
+
+import {AllBookings} from './components/AllBookings'
 const cabsBreadCrumbs: Array<PageLink> = [
     {
-        title: 'completedrides',
-        path: '/completedrides',
+        title: 'allbookings',
+        path: '/allbookings',
         isSeparator: false,
         isActive: false,
     },
@@ -23,23 +24,15 @@ const RidesPage = () => {
         <Routes>
             <Route element={<Outlet />}>
                 <Route
-                    path='completedrides'
+                    path='allbookings'
                     element={
                         <>
                             {/* <PageTitle breadcrumbs={invoicesBreadCrumbs}>Tables</PageTitle> */}
-                            <CompletedRides />
+                            <AllBookings />
                         </>
                     }
                 />
-                 <Route
-                    path='currentrides'
-                    element={
-                        <>
-                            {/* <PageTitle breadcrumbs={invoicesBreadCrumbs}>Tables</PageTitle> */}
-                            <CurrentRides />
-                        </>
-                    }
-                />
+                
             </Route>
         </Routes>
     )

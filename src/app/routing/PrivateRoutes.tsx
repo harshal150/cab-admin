@@ -12,6 +12,8 @@ import CabsPage from '../modules/cabs/CabsPage'
 import DriversPage from '../modules/Drivers/DriversPage'
 import RidesPage from '../modules/rides/RidesPage'
 import ReportPage from '../modules/reports/ReportPage'
+import BookingPage from '../modules/bookings/BookingPage'
+
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import('../modules/profile/ProfilePage'))
   const WizardsPage = lazy(() => import('../modules/wizards/WizardsPage'))
@@ -53,6 +55,16 @@ const PrivateRoutes = () => {
             <>
               {/* <SuspensedView> */}
               <ReportPage />
+              {/* </SuspensedView> */}
+            </>
+          }
+        />
+<Route
+          path='bookingspage/*'
+          element={
+            <>
+              {/* <SuspensedView> */}
+              <BookingPage />
               {/* </SuspensedView> */}
             </>
           }

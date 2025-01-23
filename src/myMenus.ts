@@ -34,19 +34,26 @@ export const menus: MenuGroup[] = [
   
       },
       {
-        name: 'All Rides',
-        svg_location: 'general',
-        icon: 'gen024',
-        route: 'rides/allrides',
-      
+        name: 'All Bookings',
+        svg_location: 'communication',
+        icon: 'com014',
+        route: 'bookingspage/allbookings',
+  
       },
       {
-        name: 'Current Rides',
-        svg_location: 'files',
-        icon: 'fil011',
-        route: 'rides/currentrides',
-       
+        name: 'Completed Rides',
+        svg_location: 'general',
+        icon: 'gen024',
+        route: 'rides/completedrides',
+      
       },
+      // {
+      //   name: 'Current Rides',
+      //   svg_location: 'files',
+      //   icon: 'fil011',
+      //   route: 'rides/currentrides',
+       
+      // },
       {
         name: 'MIS Reports',
         svg_location: 'abstract',

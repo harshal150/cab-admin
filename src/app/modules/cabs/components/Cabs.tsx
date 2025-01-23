@@ -33,6 +33,8 @@ const CabsList: FC = () => {
       try {
         const response = await axios.get('https://cabapi.payplatter.in/api/cars');
         setCabs(response.data);
+        console.log(response.data);
+        
         setFilteredCabs(response.data);
       } catch (error) {
         console.error('Error fetching car data:', error);
