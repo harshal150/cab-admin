@@ -1,117 +1,138 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-import {FC} from 'react'
-import {useIntl} from 'react-intl'
-import {toAbsoluteUrl} from '../../../_metronic/helpers'
-import {PageTitle} from '../../../_metronic/layout/core'
-import {
-  ListsWidget2,
-  ListsWidget3,
-  ListsWidget4,
-  ListsWidget6,
-  TablesWidget5,
-  TablesWidget10,
-  MixedWidget8,
-  CardsWidget7,
-  CardsWidget17,
-  CardsWidget20,
-  ListsWidget26,
-  EngageWidget10,
-} from '../../../_metronic/partials/widgets'
+import React, { FC, useEffect, useState } from 'react';
+import axios from 'axios';
+import { PageTitle } from '../../../_metronic/layout/core';
+import { useIntl } from 'react-intl';
 
-const DashboardPage: FC = () => (
-  <>
-    {/* begin::Row */}
-    <div className='row g-5 g-xl-10 mb-5 mb-xl-10'>
-      {/* begin::Col */}
-      <div className='col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-md-5 mb-xl-10'>
-        {/* <CardsWidget20
-          className='h-md-50 mb-5 mb-xl-10'
-          description='Active Projects'
-          color='#F1416C'
-          img={toAbsoluteUrl('/media/patterns/vector-1.png')}
-        /> */}
-        <CardsWidget7
-          className='h-md-50 mb-5 mb-xl-10'
-          description='Professionals'
-          icon={false}
-          stats={357}
-          labelColor='dark'
-          textColor='gray-300'
-        />
-      </div>
-      {/* end::Col */}
+const DashboardPage: FC = () => {
+  const [totalCabs, setTotalCabs] = useState<number>(0);
+  const [totalDrivers, setTotalDrivers] = useState<number>(0);
+  const [todaysBookings, setTodaysBookings] = useState<number>(0);
+  const [upcomingRides, setUpcomingRides] = useState<number>(0);
+  const [runningRides, setRunningRides] = useState<number>(0);
 
-      {/* begin::Col */}
-      <div className='col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-md-5 mb-xl-10'>
-        <CardsWidget17 className='h-md-50 mb-5 mb-xl-10' />
-        <ListsWidget26 className='h-lg-50' />
-      </div>
-      {/* end::Col */}
+  const fetchBookings = async () => {
+    try {
+      const response = await axios.get('https://cabapi.payplatter.in/api/bookings');
+      const bookings = response.data;
 
-      {/* begin::Col */}
-      <div className='col-xxl-6'>
-        <EngageWidget10 className='h-md-100' />
-      </div>
-      {/* end::Col */}
-    </div>
-    {/* end::Row */}
+      const today = new Date();
+      const todayStart = new Date(today);
+      todayStart.setHours(0, 0, 0, 0);
+      const todayEnd = new Date(today);
+      todayEnd.setHours(23, 59, 59, 999);
 
-    {/* begin::Row */}
-    <div className='row gx-5 gx-xl-10'>
-      {/* begin::Col */}
-      <div className='col-xxl-6 mb-5 mb-xl-10'>
-        {/* <app-new-charts-widget8 cssclassName="h-xl-100" chartHeight="275px" [chartHeightNumber]="275"></app-new-charts-widget8> */}
-      </div>
-      {/* end::Col */}
+      let todaysCount = 0;
+      let upcomingCount = 0;
+      let runningCount = 0;
 
-      {/* begin::Col */}
-      <div className='col-xxl-6 mb-5 mb-xl-10'>
-        {/* <app-cards-widget18 cssclassName="h-xl-100" image="./assets/media/stock/600x600/img-65.jpg"></app-cards-widget18> */}
-      </div>
-      {/* end::Col */}
-    </div>
-    {/* end::Row */}
+      bookings.forEach((booking: any) => {
+        const bookingDate = new Date(booking.booking_date);
 
-    {/* begin::Row */}
-    <div className='row gy-5 gx-xl-8'>
-      <div className='col-xxl-4'>
-        <ListsWidget3 className='card-xxl-stretch mb-xl-3' />
-      </div>
-      <div className='col-xl-8'>
-        <TablesWidget10 className='card-xxl-stretch mb-5 mb-xl-8' />
-      </div>
-    </div>
-    {/* end::Row */}
+        // Count today's bookings with "success" status
+        if (booking.status === 'success' && bookingDate >= todayStart && bookingDate <= todayEnd) {
+          todaysCount++;
+        }
 
-    {/* begin::Row */}
-    <div className='row gy-5 g-xl-8'>
-      <div className='col-xl-4'>
-        <ListsWidget2 className='card-xl-stretch mb-xl-8' />
-      </div>
-      <div className='col-xl-4'>
-        <ListsWidget6 className='card-xl-stretch mb-xl-8' />
-      </div>
-      <div className='col-xl-4'>
-        <ListsWidget4 className='card-xl-stretch mb-5 mb-xl-8' items={5} />
-        {/* partials/widgets/lists/_widget-4', 'class' => 'card-xl-stretch mb-5 mb-xl-8', 'items' => '5' */}
-      </div>
-    </div>
-    {/* end::Row */}
+        // Count upcoming rides with "success" status and "not started" ride_status
+        if (booking.status === 'success' && booking.ride_status === 'not started' && bookingDate === today) {
+          upcomingCount++;
+        }
 
-    <div className='row g-5 gx-xxl-8'>
-      <div className='col-xxl-4'>
-        <MixedWidget8
-          className='card-xxl-stretch mb-xl-3'
-          chartColor='success'
-          chartHeight='150px'
-        />
+        // Count running rides with "success" status and "started" ride_status
+        if (booking.status === 'success' && booking.ride_status === 'started') {
+          runningCount++;
+        }
+      });
+
+      setTodaysBookings(todaysCount);
+      setUpcomingRides(upcomingCount);
+      setRunningRides(runningCount);
+    } catch (error) {
+      console.error('Error fetching bookings:', error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch cabs and drivers
+        const cabsResponse = await axios.get('https://cabapi.payplatter.in/api/cars');
+        setTotalCabs(cabsResponse.data.length);
+
+        const driversResponse = await axios.get('https://cabapi.payplatter.in/api/drivers');
+        setTotalDrivers(driversResponse.data.length);
+
+        // Fetch bookings
+        await fetchBookings();
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        alert('Failed to fetch data. Please try again later.');
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  return (
+    <>
+      <PageTitle breadcrumbs={[]}>Dashboard</PageTitle>
+      <div className="container mt-4">
+        <div className="row g-4 justify-content-between">
+          {/* Card Template */}
+          {[
+            {
+              title: 'Total Cabs',
+              value: totalCabs,
+              color: 'bg-primary',
+              icon: 'bi bi-truck',
+            },
+            {
+              title: 'Total Drivers',
+              value: totalDrivers,
+              color: 'bg-info',
+              icon: 'bi bi-person-badge',
+            },
+            {
+              title: "Today's Bookings",
+              value: todaysBookings,
+              color: 'bg-success',
+              icon: 'bi bi-calendar-check',
+            },
+            {
+              title: 'Todays Upcoming Rides',
+              value: upcomingRides,
+              color: 'bg-warning',
+              icon: 'bi bi-arrow-right-circle',
+            },
+            {
+              title: 'Running Rides',
+              value: runningRides,
+              color: 'bg-danger',
+              icon: 'bi bi-lightning',
+            },
+          ].map((card, index) => (
+            <div className="col-lg-2 col-md-3 col-6" key={index}>
+              <div
+                className={`card shadow rounded-lg ${card.color} text-white text-center`}
+                style={{ height: '180px' }}
+              >
+                <div className="card-body d-flex flex-column align-items-center justify-content-center">
+                  <i className={`${card.icon} fs-1 mb-3`}></i>
+                  <h6 className="mb-2">{card.title}</h6>
+                  <p className="fs-3 fw-bold mb-0">{card.value}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-      <div className='col-xxl-8'>
-        <TablesWidget5 className='card-xxl-stretch mb-5 mb-xxl-8' />
-      </div>
-    </div>
-  </>
-)
+    </>
+  );
+};
+
+
+
+
 
 const DashboardWrapper: FC = () => {
   const intl = useIntl()

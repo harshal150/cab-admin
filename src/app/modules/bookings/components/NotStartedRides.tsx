@@ -7,44 +7,17 @@ interface Booking {
   driverName: string;
   passengerName: string;
   contact: string;
-  bookingStatus: string;
   bookingDate: string;
+  bookingTime: string;
+  rideStatus: string;
 }
 
-const AllBookings: FC = () => {
+const NotStartedRides: FC = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [fromDate, setFromDate] = useState<string>(''); // From Date
-  const [toDate, setToDate] = useState<string>(''); // To Date
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(50);
-
-  // Fetch bookings
-  // useEffect(() => {
-  //   const fetchBookings = async () => {
-  //     try {
-  //       const response = await axios.get('https://cabapi.payplatter.in/api/bookings');
-  //       const formattedBookings = response.data.map((booking: any) => ({
-  //         bookingId: booking.booking_id,
-  //         cabName: booking.cab_name,
-  //         driverName: booking.driver_name,
-  //         passengerName: booking.user_name,
-  //         contact: booking.user_mobile_no,
-  //         bookingStatus: booking.status,
-  //         bookingDate: booking.booking_date,
-  //       }));
-  //       setBookings(formattedBookings);
-  //       setFilteredBookings(formattedBookings);
-  //     } catch (error) {
-  //       console.error('Error fetching bookings:', error);
-  //       alert('Failed to fetch bookings. Please try again later.');
-  //     }
-  //   };
-
-  //   fetchBookings();
-  // }, []);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -57,35 +30,28 @@ const AllBookings: FC = () => {
             driverName: booking.driver_name,
             passengerName: booking.user_name,
             contact: booking.user_mobile_no,
-            bookingStatus: booking.status.toLowerCase(),
             bookingDate: booking.booking_date,
+            bookingTime: booking.booking_time,
+            rideStatus: booking.ride_status,
           }))
-          .filter((booking: { bookingStatus: string; }) => booking.bookingStatus !== 'booked'); // Exclude 'booked' status
+          .filter((booking: { rideStatus: string; }) => booking.rideStatus === 'not started'); // Only "not started" rides
         setBookings(formattedBookings);
         setFilteredBookings(formattedBookings);
       } catch (error) {
         console.error('Error fetching bookings:', error);
-        alert('Failed to fetch bookings. Please try again later.');
       }
     };
 
     fetchBookings();
   }, []);
 
-  // Handle search input changes
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
-    filterBookings(query, statusFilter, fromDate, toDate);
+    filterBookings(query);
   };
 
-  // Handle Apply Filter
-  const handleApplyFilter = () => {
-    filterBookings(searchQuery, statusFilter, fromDate, toDate);
-  };
-
-  // Filter bookings
-  const filterBookings = (search: string, status: string, from: string, to: string) => {
+  const filterBookings = (search: string) => {
     let filtered = bookings;
 
     if (search) {
@@ -97,34 +63,16 @@ const AllBookings: FC = () => {
       );
     }
 
-    if (from && to) {
-      const fromDate = new Date(from);
-      const toDate = new Date(to);
-      fromDate.setHours(0, 0, 0, 0); // Start of the day
-      toDate.setHours(23, 59, 59, 999); // End of the day
-      filtered = filtered.filter((booking) => {
-        const bookingDate = new Date(booking.bookingDate);
-        return bookingDate >= fromDate && bookingDate <= toDate;
-      });
-    }
-
-    if (status !== 'all') {
-      filtered = filtered.filter((booking) => booking.bookingStatus === status);
-    }
-
     setFilteredBookings(filtered);
   };
 
-  // Handle page change
   const handlePageChange = (pageNumber: number) => setCurrentPage(pageNumber);
 
-  // Handle items per page change
   const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setItemsPerPage(Number(e.target.value));
     setCurrentPage(1);
   };
 
-  // Format date
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const day = date.getDate();
@@ -133,7 +81,13 @@ const AllBookings: FC = () => {
     return `${day} ${month} ${year}`;
   };
 
-  // Pagination logic
+  const formatTime = (timeString: string) => {
+    const [hours, minutes, seconds] = timeString.split(':');
+    const isPM = parseInt(hours) >= 12;
+    const formattedHours = isPM ? (parseInt(hours) % 12 || 12) : parseInt(hours);
+    return `${formattedHours}:${minutes} ${isPM ? 'PM' : 'AM'}`;
+  };
+
   const totalPages = Math.ceil(filteredBookings.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -145,53 +99,19 @@ const AllBookings: FC = () => {
         <div id="kt_app_content" className="app-content flex-column-fluid">
           <div className="card card-flush">
             <div className="card-header align-items-center py-3 gap-2 gap-md-12">
-              <h3 className="card-title">All Bookings</h3>
+              <h3 className="card-title">Not Started Rides</h3>
             </div>
             <div className="card-header align-items-center gap-2 flex-wrap">
               <div className="d-flex align-items-center flex-grow-1 flex-shrink-0">
-                <div className="d-flex align-items-center">
+                <div className="position-relative ms-3">
                   <input
-                    type="date"
-                    className="form-control form-control-solid"
-                    value={fromDate}
-                    onChange={(e) => setFromDate(e.target.value)}
-                    placeholder="From Date"
-                  />
-                  <input
-                    type="date"
-                    className="form-control form-control-solid ms-2"
-                    value={toDate}
-                    onChange={(e) => setToDate(e.target.value)}
-                    placeholder="To Date"
+                    type="text"
+                    className="form-control form-control-solid w-[150px] ps-4"
+                    placeholder="Search by Cab or Passenger"
+                    value={searchQuery}
+                    onChange={handleSearchChange}
                   />
                 </div>
-                <div className="w-240px ms-3">
-                  <select
-                    className="form-select form-select-solid"
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                  >
-                    <option value="all">All Status</option>
-                    <option value="success">Success</option>
-                    <option value="cancelled">cancelled</option>
-                    <option value="pending">Pending</option>
-                  </select>
-                </div>
-                <button
-                  className="btn btn-primary ms-3"
-                  onClick={handleApplyFilter}
-                >
-                  Apply
-                </button>
-              </div>
-              <div className="position-relative ms-3">
-                <input
-                  type="text"
-                  className="form-control form-control-solid w-[150px] ps-4"
-                  placeholder="Search by Cab or Passenger"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                />
               </div>
             </div>
             <div className="card-body pt-0">
@@ -205,14 +125,15 @@ const AllBookings: FC = () => {
                       <th className="min-w-100px">Passenger Name</th>
                       <th className="min-w-100px">Contact</th>
                       <th className="min-w-100px">Booking Date</th>
-                      <th className="min-w-100px">Status</th>
+                      <th className="min-w-100px">Booking Time</th>
+                      <th className="min-w-100px">Ride Status</th>
                     </tr>
                   </thead>
                   <tbody>
                     {currentItems.length === 0 ? (
                       <tr>
-                        <td colSpan={7} className="text-center">
-                          No bookings available
+                        <td colSpan={8} className="text-center">
+                          No rides available
                         </td>
                       </tr>
                     ) : (
@@ -237,17 +158,10 @@ const AllBookings: FC = () => {
                             <span className="text-dark fw-bold text-hover-primary">{formatDate(booking.bookingDate)}</span>
                           </td>
                           <td>
-                            <span
-                              className={`badge ${
-                                booking.bookingStatus === 'success'
-                                  ? 'badge-success'
-                                  : booking.bookingStatus === 'cancelled'
-                                  ? 'badge-primary'
-                                  : 'badge-warning'
-                              }`}
-                            >
-                              {booking.bookingStatus}
-                            </span>
+                            <span className="text-dark fw-bold text-hover-primary">{formatTime(booking.bookingTime)}</span>
+                          </td>
+                          <td>
+                            <span className="badge badge-success">{booking.rideStatus}</span>
                           </td>
                         </tr>
                       ))
@@ -288,4 +202,4 @@ const AllBookings: FC = () => {
   );
 };
 
-export { AllBookings };
+export { NotStartedRides };

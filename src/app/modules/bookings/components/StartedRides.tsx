@@ -1,80 +1,71 @@
 import React, { FC, useState, useEffect } from 'react';
 import axios from 'axios';
 
-interface Ride {
-  rideId: number;
-  userName: string;
-  rideStatus: string; // Mapped from 'status' in API
-  paidAmount: string; // Mapped from 'amount' in API
-  startReading: number;
-  endReading: number;
-  readingDifference: number; // Mapped from 'reading_difference' in API
-  rate: number; // Mapped from 'rate' in API
-  transactionId: string;
-  paymentMethod: string;
-  receiptNumber: string;
-  rideDate: string; // Mapped from 'created_date' in API
+interface Transaction {
+  bookingId: number;
+  passengerName: string;
+  bookingDate: string;
+  bookingTime: string;
+  rideStatus: string;
+  startReading: number | null;
+  endReading: number | null;
 }
 
-const CompletedRides: FC = () => {
-  const [rides, setRides] = useState<Ride[]>([]);
-  const [filteredRides, setFilteredRides] = useState<Ride[]>([]);
+const StartedRides: FC = () => {
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
 
   useEffect(() => {
-    const fetchRides = async () => {
+    const fetchTransactions = async () => {
       try {
         const response = await axios.get('https://cabapi.payplatter.in/api/transactions');
-        const filteredData = response.data.filter(
-          (ride: any) =>
-            ride.booking_status === 'success' &&
-            ride.status === 'success' &&
-            ride.ride_status === 'ended'
-        );
+        const formattedTransactions = response.data
+          .map((transaction: any) => ({
+            bookingId: transaction.booking_id,
+            passengerName: transaction.user_name,
+            bookingDate: transaction.created_date,
+            bookingTime: new Date(transaction.created_at).toLocaleTimeString('en-US', {
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: true,
+            }),
+            rideStatus: transaction.ride_status,
+            startReading: transaction.start_reading,
+            endReading: transaction.end_reading,
+          }))
+          .filter(
+            (transaction: Transaction) =>
+              transaction.startReading !== null &&
+              transaction.endReading === null &&
+              transaction.rideStatus === 'started'
+          );
 
-        const mappedRides = filteredData.map((ride: any) => ({
-          rideId: ride.id,
-          userName: ride.user_name,
-          rideStatus: ride.status,
-          paidAmount: ride.amount, // Renamed from 'fare' to 'Paid Amount'
-          startReading: ride.start_reading,
-          endReading: ride.end_reading,
-          readingDifference: ride.reading_difference, // Added reading_difference
-          rate: ride.rate, // Added rate
-          transactionId: ride.transaction_id,
-          paymentMethod: ride.payment_method,
-          receiptNumber: ride.receipt_number,
-          rideDate: ride.created_date,
-        }));
-
-        setRides(mappedRides);
-        setFilteredRides(mappedRides);
+        setTransactions(formattedTransactions);
+        setFilteredTransactions(formattedTransactions);
       } catch (error) {
-        console.error('Error fetching rides:', error);
+        console.error('Error fetching transactions:', error);
       }
     };
 
-    fetchRides();
+    fetchTransactions();
   }, []);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
-    filterRides(query);
+    filterTransactions(query);
   };
 
-  const filterRides = (search: string) => {
-    let filtered = rides;
-
-    if (search) {
-      filtered = filtered.filter((ride) =>
-        ride.userName.toLowerCase().includes(search)
-      );
-    }
-
-    setFilteredRides(filtered);
+  const filterTransactions = (search: string) => {
+    const filtered = transactions.filter(
+      (transaction) =>
+        transaction.passengerName.toLowerCase().includes(search) ||
+        transaction.bookingId.toString().includes(search)
+    );
+    setFilteredTransactions(filtered);
   };
 
   const handlePageChange = (pageNumber: number) => setCurrentPage(pageNumber);
@@ -92,10 +83,10 @@ const CompletedRides: FC = () => {
     return `${day} ${month} ${year}`;
   };
 
-  const totalPages = Math.ceil(filteredRides.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredRides.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredTransactions.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <div className="app-main flex-column flex-row-fluid" id="kt_app_main" style={{ marginTop: '-26px', marginBottom: '-26px' }}>
@@ -103,7 +94,7 @@ const CompletedRides: FC = () => {
         <div id="kt_app_content" className="app-content flex-column-fluid">
           <div className="card card-flush">
             <div className="card-header align-items-center py-3 gap-2 gap-md-12">
-              <h3 className="card-title">Completed Rides</h3>
+              <h3 className="card-title">Started Rides</h3>
             </div>
             <div className="card-header align-items-center gap-2 flex-wrap">
               <div className="d-flex align-items-center flex-grow-1 flex-shrink-0">
@@ -111,7 +102,7 @@ const CompletedRides: FC = () => {
                   <input
                     type="text"
                     className="form-control form-control-solid w-[150px] ps-4"
-                    placeholder="Search by Driver Name"
+                    placeholder="Search by Passenger or Booking ID"
                     value={searchQuery}
                     onChange={handleSearchChange}
                   />
@@ -123,65 +114,45 @@ const CompletedRides: FC = () => {
                 <table className="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
                   <thead style={{ backgroundColor: '#F1FAFF' }}>
                     <tr className="fw-bold fs-7">
-                      <th className="min-w-50px ps-4 rounded-start">Ride ID</th>
-                      <th className="min-w-100px">Passenger Name</th>
-                      <th className="min-w-100px">Ride Date</th>
+                      <th className="min-w-50px ps-4 rounded-start">Booking ID</th>
+                      <th className="min-w-150px">Passenger Name</th>
+                      <th className="min-w-150px">Booking Date</th>
+                      <th className="min-w-100px">Booking Time</th>
+                      <th className="min-w-100px">Ride Status</th>
                       <th className="min-w-100px">Start Reading</th>
                       <th className="min-w-100px">End Reading</th>
-                      <th className="min-w-100px">Reading Difference</th>
-                      <th className="min-w-100px">Rate</th>
-                      <th className="min-w-100px">Total Paid Amount </th>
-                      <th className="min-w-100px">Transaction ID</th>
-                      <th className="min-w-100px">Payment Method</th>
-                      <th className="min-w-100px">Receipt Number</th>
-                      <th className="min-w-100px">Status</th>
                     </tr>
                   </thead>
                   <tbody>
                     {currentItems.length === 0 ? (
                       <tr>
-                        <td colSpan={12} className="text-center">
+                        <td colSpan={7} className="text-center">
                           No rides available
                         </td>
                       </tr>
                     ) : (
-                      currentItems.map((ride) => (
-                        <tr key={ride.rideId} className="fs-7">
+                      currentItems.map((transaction) => (
+                        <tr key={transaction.bookingId} className="fs-7">
                           <td className="ps-4">
-                            <span className="text-dark fw-bold text-hover-primary">{ride.rideId}</span>
+                            <span className="text-dark fw-bold text-hover-primary">{transaction.bookingId}</span>
                           </td>
                           <td>
-                            <span className="text-dark fw-bold text-hover-primary">{ride.userName}</span>
+                            <span className="text-dark fw-bold text-hover-primary">{transaction.passengerName}</span>
                           </td>
                           <td>
-                            <span className="text-dark fw-bold text-hover-primary">{formatDate(ride.rideDate)}</span>
+                            <span className="text-dark fw-bold text-hover-primary">{formatDate(transaction.bookingDate)}</span>
                           </td>
                           <td>
-                            <span className="text-dark fw-bold text-hover-primary">{ride.startReading}</span>
+                            <span className="text-dark fw-bold text-hover-primary">{transaction.bookingTime}</span>
                           </td>
                           <td>
-                            <span className="text-dark fw-bold text-hover-primary">{ride.endReading}</span>
+                            <span className="badge badge-success">{transaction.rideStatus}</span>
                           </td>
                           <td>
-                            <span className="text-dark fw-bold text-hover-primary">{ride.readingDifference}</span>
+                            <span className="text-dark fw-bold text-hover-primary">{transaction.startReading}</span>
                           </td>
                           <td>
-                            <span className="text-dark fw-bold text-hover-primary">{ride.rate}</span>
-                          </td>
-                          <td>
-                            <span className="text-dark fw-bold text-hover-primary">{ride.paidAmount}</span>
-                          </td>
-                          <td>
-                            <span className="text-dark fw-bold text-hover-primary">{ride.transactionId}</span>
-                          </td>
-                          <td>
-                            <span className="text-dark fw-bold text-hover-primary">{ride.paymentMethod}</span>
-                          </td>
-                          <td>
-                            <span className="text-dark fw-bold text-hover-primary">{ride.receiptNumber}</span>
-                          </td>
-                          <td>
-                            <span className="badge badge-success">{ride.rideStatus}</span>
+                            <span className="text-dark fw-bold text-hover-primary">{transaction.endReading || 'N/A'}</span>
                           </td>
                         </tr>
                       ))
@@ -222,4 +193,4 @@ const CompletedRides: FC = () => {
   );
 };
 
-export { CompletedRides };
+export { StartedRides };

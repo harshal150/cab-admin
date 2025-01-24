@@ -10,18 +10,18 @@ const Footer = () => {
   return (
     <>
       <div className='text-dark order-2 order-md-1'>
-        <span className='text-muted fw-semibold me-1'>
+        {/* <span className='text-muted fw-semibold me-1'>
           {new Date().getFullYear().toString()}&copy;
-        </span>
-        <a
+        </span> */}
+        {/* <a
           href='https://payplatter.in/'
           target='_blank'
           className='text-gray-800 text-hover-primary'
         >
           PayPlatter
-        </a>
+        </a> */}
       </div>
-
+{/* 
       <ul className='menu menu-gray-600 menu-hover-primary fw-semibold order-1'>
         <li className='menu-item'>
           <a href='https://payplatter.in/#service' target='_blank' className='menu-link px-2'>
@@ -35,7 +35,7 @@ const Footer = () => {
           </a>
         </li>
 
-      </ul>
+      </ul> */}
     </>
   )
 }

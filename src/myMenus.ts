@@ -3,18 +3,18 @@
 import { MenuGroup } from "./_metronic/layout/components/sidebar/sidebar-menu/types";
 
 export const menus: MenuGroup[] = [
-  // {
-  //   name: 'Home',
-  //   menu: [
-  //     {
-  //       name: 'Dashboard',
-  //       svg_location: 'general',
-  //       icon: 'gen025',
-  //       route: '/dashboard',
+  {
+    name: 'Home',
+    menu: [
+      {
+        name: 'Dashboard',
+        svg_location: 'general',
+        icon: 'gen025',
+        route: '/dashboard',
         
-  //     }
-  //   ],
-  // },
+      }
+    ],
+  },
   {
     
     name: 'Apps',
@@ -40,6 +40,27 @@ export const menus: MenuGroup[] = [
         route: 'bookingspage/allbookings',
   
       },
+      {
+        name: 'Not started Rides',
+        svg_location: 'communication',
+        icon: 'com014',
+        route: 'bookingspage/notstarted',
+  
+      },
+      {
+        name: 'Started Rides',
+        svg_location: 'communication',
+        icon: 'com014',
+        route: 'bookingspage/started',
+  
+      },
+      // {
+      //   name: 'Ended Rides',
+      //   svg_location: 'communication',
+      //   icon: 'com014',
+      //   route: 'bookingspage/ended',
+  
+      // },
       {
         name: 'Completed Rides',
         svg_location: 'general',

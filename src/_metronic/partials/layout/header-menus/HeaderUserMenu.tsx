@@ -123,11 +123,11 @@ const HeaderUserMenu: FC = () => {
         </Link>
       </div> */}
 
-      {/* <div className='menu-item px-5'>
+      <div className='menu-item px-5'>
         <a onClick={logout} className='menu-link px-5'>
           Sign Out
         </a>
-      </div> */}
+      </div>
     </div>
   )
 }
