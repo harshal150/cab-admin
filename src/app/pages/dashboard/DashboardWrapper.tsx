@@ -24,12 +24,12 @@ const DashboardPage: FC = () => (
     <div className='row g-5 g-xl-10 mb-5 mb-xl-10'>
       {/* begin::Col */}
       <div className='col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-md-5 mb-xl-10'>
-        <CardsWidget20
+        {/* <CardsWidget20
           className='h-md-50 mb-5 mb-xl-10'
           description='Active Projects'
           color='#F1416C'
           img={toAbsoluteUrl('/media/patterns/vector-1.png')}
-        />
+        /> */}
         <CardsWidget7
           className='h-md-50 mb-5 mb-xl-10'
           description='Professionals'

@@ -3,18 +3,18 @@
 import { MenuGroup } from "./_metronic/layout/components/sidebar/sidebar-menu/types";
 
 export const menus: MenuGroup[] = [
-  {
-    name: 'Home',
-    menu: [
-      {
-        name: 'Dashboard',
-        svg_location: 'general',
-        icon: 'gen025',
-        route: '/dashboard',
+  // {
+  //   name: 'Home',
+  //   menu: [
+  //     {
+  //       name: 'Dashboard',
+  //       svg_location: 'general',
+  //       icon: 'gen025',
+  //       route: '/dashboard',
         
-      }
-    ],
-  },
+  //     }
+  //   ],
+  // },
   {
     
     name: 'Apps',
@@ -54,18 +54,18 @@ export const menus: MenuGroup[] = [
       //   route: 'rides/currentrides',
        
       // },
-      {
-        name: 'MIS Reports',
-        svg_location: 'abstract',
-        icon: 'abs045',
-        route: 'reportspage/reports'
-      },
-      {
-        name: 'Customers',
-        svg_location: 'graphs',
-        icon: 'gra001',
-        route: 'polls'
-      },
+      // {
+      //   name: 'MIS Reports',
+      //   svg_location: 'abstract',
+      //   icon: 'abs045',
+      //   route: 'reportspage/reports'
+      // },
+      // {
+      //   name: 'Customers',
+      //   svg_location: 'graphs',
+      //   icon: 'gra001',
+      //   route: 'polls'
+      // },
       // {
       //   name: 'Reports',
       //   svg_location: 'graphs',

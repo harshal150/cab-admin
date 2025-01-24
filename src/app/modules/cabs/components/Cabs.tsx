@@ -28,22 +28,33 @@ const CabsList: FC = () => {
   const [currentCab, setCurrentCab] = useState<Car | null>(null);
 
   // Fetch data from API
-  useEffect(() => {
-    const fetchCabs = async () => {
-      try {
-        const response = await axios.get('https://cabapi.payplatter.in/api/cars');
-        setCabs(response.data);
-        console.log(response.data);
-        
-        setFilteredCabs(response.data);
-      } catch (error) {
-        console.error('Error fetching car data:', error);
-      }
-    };
-  
-    fetchCabs();
-  }, [refresh]); // Re-fetch data whenever `refresh` changes
-  
+
+// Fetch data from API
+useEffect(() => {
+  const fetchCabs = async () => {
+    try {
+      const response = await axios.get('https://cabapi.payplatter.in/api/cars');
+      
+      // Map response data to match expected keys
+      const transformedCabs = response.data.map((cab: any) => ({
+        id: cab.car_id, // Map `car_id` to `id`
+        name: cab.car_name, // Map `car_name` to `name`
+        rate_per_km: parseFloat(cab.rate_per_km), // Convert to number
+        fixed_charges: parseFloat(cab.fixed_charges), // Convert to number
+        status: cab.status,
+      }));
+      
+      setCabs(transformedCabs);
+      setFilteredCabs(transformedCabs);
+    } catch (error) {
+      console.error('Error fetching car data:', error);
+    }
+  };
+
+  fetchCabs();
+}, [refresh]); // Re-fetch data whenever `refresh` changes
+
+
 
   // Filter functionality
   const filterCabs = (search: string, status: string) => {
