@@ -152,7 +152,7 @@ const DashboardPage: FC = () => {
             {
               title: "Today's Collection",
               value: `₹${todaysCollection.toFixed(2)}`,
-              color: 'bg-secondary', // New color for differentiation
+              color: 'bg-info', // New color for differentiation
               icon: 'bi bi-cash',
             },
             {
