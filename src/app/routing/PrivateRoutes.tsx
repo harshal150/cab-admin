@@ -90,7 +90,8 @@ const PrivateRoutes = () => {
        
        
       
-        <Route path='dashboard' element={<DashboardWrapper />} />
+        {/* <Route path='dashboard' element={<DashboardWrapper />} /> */}
+        <Route path='dashboard'  />
         <Route path='builder' element={<BuilderPageWrapper />} />
         <Route path='menu-test' element={<MenuTestPage />} />
         {/* Lazy Modules */}
