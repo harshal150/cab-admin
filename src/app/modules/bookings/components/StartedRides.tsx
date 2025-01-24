@@ -1,9 +1,14 @@
 import React, { FC, useState, useEffect } from 'react';
 import axios from 'axios';
+import * as XLSX from 'xlsx';
 
 interface Transaction {
   bookingId: number;
+  cabName: string;
+  driverName: string;
+  driverContact: string;
   passengerName: string;
+  passengerContact: string;
   bookingDate: string;
   bookingTime: string;
   rideStatus: string;
@@ -25,7 +30,11 @@ const StartedRides: FC = () => {
         const formattedTransactions = response.data
           .map((transaction: any) => ({
             bookingId: transaction.booking_id,
+            cabName: transaction.car_name,
+            driverName: transaction.driver_name,
+            driverContact: transaction.driver_mobile_no,
             passengerName: transaction.user_name,
+            passengerContact: transaction.passenger_contact,
             bookingDate: transaction.created_date,
             bookingTime: new Date(transaction.created_at).toLocaleTimeString('en-US', {
               hour: '2-digit',
@@ -34,15 +43,13 @@ const StartedRides: FC = () => {
             }),
             rideStatus: transaction.ride_status,
             startReading: transaction.start_reading,
-            endReading: transaction.end_reading,
           }))
           .filter(
             (transaction: Transaction) =>
               transaction.startReading !== null &&
               transaction.endReading === null &&
               transaction.rideStatus === 'started'
-          );
-
+          ); // Filtering for 'started' rides
         setTransactions(formattedTransactions);
         setFilteredTransactions(formattedTransactions);
       } catch (error) {
@@ -56,14 +63,10 @@ const StartedRides: FC = () => {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
-    filterTransactions(query);
-  };
-
-  const filterTransactions = (search: string) => {
     const filtered = transactions.filter(
       (transaction) =>
-        transaction.passengerName.toLowerCase().includes(search) ||
-        transaction.bookingId.toString().includes(search)
+        transaction.passengerName.toLowerCase().includes(query) ||
+        transaction.bookingId.toString().includes(query)
     );
     setFilteredTransactions(filtered);
   };
@@ -83,6 +86,26 @@ const StartedRides: FC = () => {
     return `${day} ${month} ${year}`;
   };
 
+  const handleExport = () => {
+    const dataToExport = filteredTransactions.map((transaction) => ({
+      'Booking ID': transaction.bookingId,
+      'Cab Name': transaction.cabName,
+      'Driver Name': transaction.driverName,
+      'Driver Contact': transaction.driverContact,
+      'Passenger Name': transaction.passengerName,
+      'Passenger Contact': transaction.passengerContact,
+      'Booking Date': formatDate(transaction.bookingDate),
+      'Booking Time': transaction.bookingTime,
+      'Ride Status': transaction.rideStatus,
+      'Start Reading': transaction.startReading ?? 'N/A',
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Started Rides');
+    XLSX.writeFile(workbook, 'Started_Rides.xlsx');
+  };
+
   const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -95,6 +118,9 @@ const StartedRides: FC = () => {
           <div className="card card-flush">
             <div className="card-header align-items-center py-3 gap-2 gap-md-12">
               <h3 className="card-title">Started Rides</h3>
+              <button className="btn btn-primary" onClick={handleExport}>
+                Export
+              </button>
             </div>
             <div className="card-header align-items-center gap-2 flex-wrap">
               <div className="d-flex align-items-center flex-grow-1 flex-shrink-0">
@@ -115,18 +141,21 @@ const StartedRides: FC = () => {
                   <thead style={{ backgroundColor: '#F1FAFF' }}>
                     <tr className="fw-bold fs-7">
                       <th className="min-w-50px ps-4 rounded-start">Booking ID</th>
+                      <th className="min-w-150px">Cab Name</th>
+                      <th className="min-w-150px">Driver Name</th>
+                      <th className="min-w-150px">Driver Contact</th>
                       <th className="min-w-150px">Passenger Name</th>
+                      <th className="min-w-150px">Passenger Contact</th>
                       <th className="min-w-150px">Booking Date</th>
                       <th className="min-w-100px">Booking Time</th>
                       <th className="min-w-100px">Ride Status</th>
                       <th className="min-w-100px">Start Reading</th>
-                      <th className="min-w-100px">End Reading</th>
                     </tr>
                   </thead>
                   <tbody>
                     {currentItems.length === 0 ? (
                       <tr>
-                        <td colSpan={7} className="text-center">
+                        <td colSpan={10} className="text-center">
                           No rides available
                         </td>
                       </tr>
@@ -137,7 +166,19 @@ const StartedRides: FC = () => {
                             <span className="text-dark fw-bold text-hover-primary">{transaction.bookingId}</span>
                           </td>
                           <td>
+                            <span className="text-dark fw-bold text-hover-primary">{transaction.cabName}</span>
+                          </td>
+                          <td>
+                            <span className="text-dark fw-bold text-hover-primary">{transaction.driverName}</span>
+                          </td>
+                          <td>
+                            <span className="text-dark fw-bold text-hover-primary">{transaction.driverContact}</span>
+                          </td>
+                          <td>
                             <span className="text-dark fw-bold text-hover-primary">{transaction.passengerName}</span>
+                          </td>
+                          <td>
+                            <span className="text-dark fw-bold text-hover-primary">{transaction.passengerContact}</span>
                           </td>
                           <td>
                             <span className="text-dark fw-bold text-hover-primary">{formatDate(transaction.bookingDate)}</span>
@@ -149,10 +190,7 @@ const StartedRides: FC = () => {
                             <span className="badge badge-success">{transaction.rideStatus}</span>
                           </td>
                           <td>
-                            <span className="text-dark fw-bold text-hover-primary">{transaction.startReading}</span>
-                          </td>
-                          <td>
-                            <span className="text-dark fw-bold text-hover-primary">{transaction.endReading || 'N/A'}</span>
+                            <span className="text-dark fw-bold text-hover-primary">{transaction.startReading ?? 'N/A'}</span>
                           </td>
                         </tr>
                       ))

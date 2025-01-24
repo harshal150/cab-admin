@@ -9,6 +9,65 @@ const DashboardPage: FC = () => {
   const [todaysBookings, setTodaysBookings] = useState<number>(0);
   const [upcomingRides, setUpcomingRides] = useState<number>(0);
   const [runningRides, setRunningRides] = useState<number>(0);
+  const [todaysCollection, setTodaysCollection] = useState<number>(0);
+  const [totalCollection, setTotalCollection] = useState<number>(0);
+
+  const fetchTransactions = async () => {
+    try {
+      const response = await axios.get('https://cabapi.payplatter.in/api/transactions');
+      const transactions = response.data;
+
+      const today = new Date();
+      const todayStart = new Date(today);
+      todayStart.setHours(0, 0, 0, 0);
+      const todayEnd = new Date(today);
+      todayEnd.setHours(23, 59, 59, 999);
+
+      let todaySum = 0;
+      let totalSum = 0;
+
+      transactions.forEach((transaction: any) => {
+        const createdDate = new Date(transaction.created_date);
+
+        // Sum today's collection
+        if (createdDate >= todayStart && createdDate <= todayEnd) {
+          todaySum += parseFloat(transaction.amount || '0');
+        }
+
+        // Sum total collection
+        totalSum += parseFloat(transaction.amount || '0');
+      });
+
+      setTodaysCollection(todaySum);
+      setTotalCollection(totalSum);
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch cabs and drivers
+        const cabsResponse = await axios.get('https://cabapi.payplatter.in/api/cars');
+        setTotalCabs(cabsResponse.data.length);
+
+        const driversResponse = await axios.get('https://cabapi.payplatter.in/api/drivers');
+        setTotalDrivers(driversResponse.data.length);
+
+        // Fetch bookings
+        await fetchBookings();
+
+        // Fetch transactions for collections
+        await fetchTransactions();
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        alert('Failed to fetch data. Please try again later.');
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const fetchBookings = async () => {
     try {
@@ -34,7 +93,7 @@ const DashboardPage: FC = () => {
         }
 
         // Count upcoming rides with "success" status and "not started" ride_status
-        if (booking.status === 'success' && booking.ride_status === 'not started' && bookingDate === today) {
+        if (booking.status === 'success' && booking.ride_status === 'not started' && bookingDate >= todayStart && bookingDate <= todayEnd) {
           upcomingCount++;
         }
 
@@ -52,33 +111,12 @@ const DashboardPage: FC = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch cabs and drivers
-        const cabsResponse = await axios.get('https://cabapi.payplatter.in/api/cars');
-        setTotalCabs(cabsResponse.data.length);
-
-        const driversResponse = await axios.get('https://cabapi.payplatter.in/api/drivers');
-        setTotalDrivers(driversResponse.data.length);
-
-        // Fetch bookings
-        await fetchBookings();
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        alert('Failed to fetch data. Please try again later.');
-      }
-    };
-
-    fetchData();
-  }, []);
-
   return (
     <>
       <PageTitle breadcrumbs={[]}>Dashboard</PageTitle>
       <div className="container mt-4">
         <div className="row g-4 justify-content-between">
-          {/* Card Template */}
+          {/* Existing Cards */}
           {[
             {
               title: 'Total Cabs',
@@ -101,7 +139,7 @@ const DashboardPage: FC = () => {
             {
               title: 'Todays Upcoming Rides',
               value: upcomingRides,
-              color: 'bg-warning',
+              color: 'bg-dark',
               icon: 'bi bi-arrow-right-circle',
             },
             {
@@ -109,6 +147,19 @@ const DashboardPage: FC = () => {
               value: runningRides,
               color: 'bg-danger',
               icon: 'bi bi-lightning',
+            },
+            // New Cards
+            {
+              title: "Today's Collection",
+              value: `₹${todaysCollection.toFixed(2)}`,
+              color: 'bg-secondary', // New color for differentiation
+              icon: 'bi bi-cash',
+            },
+            {
+              title: 'Total Collection',
+              value: `₹${totalCollection.toFixed(2)}`,
+              color: 'bg-warning', // New color for differentiation
+              icon: 'bi bi-wallet',
             },
           ].map((card, index) => (
             <div className="col-lg-2 col-md-3 col-6" key={index}>
@@ -118,8 +169,8 @@ const DashboardPage: FC = () => {
               >
                 <div className="card-body d-flex flex-column align-items-center justify-content-center">
                   <i className={`${card.icon} fs-1 mb-3`}></i>
-                  <h6 className="mb-2">{card.title}</h6>
-                  <p className="fs-3 fw-bold mb-0">{card.value}</p>
+                  <h6 className="mb-2 text-white">{card.title}</h6>
+                  <p className="fs-3 fw-bold mb-0 text-white">{card.value}</p>
                 </div>
               </div>
             </div>
@@ -129,6 +180,7 @@ const DashboardPage: FC = () => {
     </>
   );
 };
+
 
 
 

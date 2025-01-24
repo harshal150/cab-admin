@@ -1,5 +1,6 @@
 import React, { FC, useState, useEffect } from 'react';
 import axios from 'axios';
+import * as XLSX from 'xlsx';
 
 interface Booking {
   bookingId: number;
@@ -10,12 +11,15 @@ interface Booking {
   bookingDate: string;
   bookingTime: string;
   rideStatus: string;
+  driverMobile: string;
 }
 
 const NotStartedRides: FC = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [fromDate, setFromDate] = useState<string>('');
+  const [toDate, setToDate] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(50);
 
@@ -33,8 +37,10 @@ const NotStartedRides: FC = () => {
             bookingDate: booking.booking_date,
             bookingTime: booking.booking_time,
             rideStatus: booking.ride_status,
+            driverMobile: booking.driver_mobile_no,
           }))
-          .filter((booking: { rideStatus: string; }) => booking.rideStatus === 'not started'); // Only "not started" rides
+          .filter((booking: { rideStatus: string }) => booking.rideStatus === 'not started')
+          .sort((a: { bookingId: number }, b: { bookingId: number }) => b.bookingId - a.bookingId); // Sort by latest bookingId
         setBookings(formattedBookings);
         setFilteredBookings(formattedBookings);
       } catch (error) {
@@ -48,10 +54,14 @@ const NotStartedRides: FC = () => {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
-    filterBookings(query);
+    filterBookings(query, fromDate, toDate);
   };
 
-  const filterBookings = (search: string) => {
+  const handleApplyFilter = () => {
+    filterBookings(searchQuery, fromDate, toDate);
+  };
+
+  const filterBookings = (search: string, from: string, to: string) => {
     let filtered = bookings;
 
     if (search) {
@@ -63,7 +73,25 @@ const NotStartedRides: FC = () => {
       );
     }
 
+    if (from && to) {
+      const fromDate = new Date(from);
+      const toDate = new Date(to);
+      fromDate.setHours(0, 0, 0, 0);
+      toDate.setHours(23, 59, 59, 999);
+      filtered = filtered.filter((booking) => {
+        const bookingDate = new Date(booking.bookingDate);
+        return bookingDate >= fromDate && bookingDate <= toDate;
+      });
+    }
+
     setFilteredBookings(filtered);
+  };
+
+  const handleExport = () => {
+    const worksheet = XLSX.utils.json_to_sheet(filteredBookings);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'NotStartedRides');
+    XLSX.writeFile(workbook, 'NotStartedRides.xlsx');
   };
 
   const handlePageChange = (pageNumber: number) => setCurrentPage(pageNumber);
@@ -82,7 +110,7 @@ const NotStartedRides: FC = () => {
   };
 
   const formatTime = (timeString: string) => {
-    const [hours, minutes, seconds] = timeString.split(':');
+    const [hours, minutes] = timeString.split(':');
     const isPM = parseInt(hours) >= 12;
     const formattedHours = isPM ? (parseInt(hours) % 12 || 12) : parseInt(hours);
     return `${formattedHours}:${minutes} ${isPM ? 'PM' : 'AM'}`;
@@ -94,24 +122,42 @@ const NotStartedRides: FC = () => {
   const currentItems = filteredBookings.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
-    <div className="app-main flex-column flex-row-fluid" id="kt_app_main" style={{ marginTop: '-26px', marginBottom: '-26px' }}>
+    <div className="app-main flex-column flex-row-fluid" id="kt_app_main">
       <div className="d-flex flex-column flex-column-fluid py-2">
         <div id="kt_app_content" className="app-content flex-column-fluid">
           <div className="card card-flush">
             <div className="card-header align-items-center py-3 gap-2 gap-md-12">
               <h3 className="card-title">Not Started Rides</h3>
+              <button className="btn btn-success ms-auto" onClick={handleExport}>
+                Export
+              </button>
             </div>
             <div className="card-header align-items-center gap-2 flex-wrap">
-              <div className="d-flex align-items-center flex-grow-1 flex-shrink-0">
-                <div className="position-relative ms-3">
-                  <input
-                    type="text"
-                    className="form-control form-control-solid w-[150px] ps-4"
-                    placeholder="Search by Cab or Passenger"
-                    value={searchQuery}
-                    onChange={handleSearchChange}
-                  />
-                </div>
+              <div className="d-flex align-items-center">
+                <input
+                  type="date"
+                  className="form-control form-control-solid"
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                />
+                <input
+                  type="date"
+                  className="form-control form-control-solid ms-2"
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                />
+                <button className="btn btn-primary ms-2" onClick={handleApplyFilter}>
+                  Apply
+                </button>
+              </div>
+              <div className="position-relative ms-3">
+                <input
+                  type="text"
+                  className="form-control form-control-solid w-[150px] ps-4"
+                  placeholder="Search by Cab or Passenger"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                />
               </div>
             </div>
             <div className="card-body pt-0">
@@ -122,6 +168,7 @@ const NotStartedRides: FC = () => {
                       <th className="min-w-50px ps-4 rounded-start">Booking ID</th>
                       <th className="min-w-100px">Cab Name</th>
                       <th className="min-w-100px">Driver Name</th>
+                      <th className="min-w-100px">Driver Contact</th>
                       <th className="min-w-100px">Passenger Name</th>
                       <th className="min-w-100px">Contact</th>
                       <th className="min-w-100px">Booking Date</th>
@@ -132,7 +179,7 @@ const NotStartedRides: FC = () => {
                   <tbody>
                     {currentItems.length === 0 ? (
                       <tr>
-                        <td colSpan={8} className="text-center">
+                        <td colSpan={9} className="text-center">
                           No rides available
                         </td>
                       </tr>
@@ -142,26 +189,15 @@ const NotStartedRides: FC = () => {
                           <td className="ps-4">
                             <span className="text-dark fw-bold text-hover-primary">{booking.bookingId}</span>
                           </td>
+                          <td className="text-dark fw-bold text-hover-primary">{booking.cabName}</td>
+                          <td className="text-dark fw-bold text-hover-primary">{booking.driverName}</td>
+                          <td className="text-dark fw-bold text-hover-primary">{booking.driverMobile}</td>
+                          <td className="text-dark fw-bold text-hover-primary">{booking.passengerName}</td>
+                          <td className="text-dark fw-bold text-hover-primary">{booking.contact}</td>
+                          <td className="text-dark fw-bold text-hover-primary">{formatDate(booking.bookingDate)}</td>
+                          <td className="text-dark fw-bold text-hover-primary">{formatTime(booking.bookingTime)}</td>
                           <td>
-                            <span className="text-dark fw-bold text-hover-primary">{booking.cabName}</span>
-                          </td>
-                          <td>
-                            <span className="text-dark fw-bold text-hover-primary">{booking.driverName}</span>
-                          </td>
-                          <td>
-                            <span className="text-dark fw-bold text-hover-primary">{booking.passengerName}</span>
-                          </td>
-                          <td>
-                            <span className="text-dark fw-bold text-hover-primary">{booking.contact}</span>
-                          </td>
-                          <td>
-                            <span className="text-dark fw-bold text-hover-primary">{formatDate(booking.bookingDate)}</span>
-                          </td>
-                          <td>
-                            <span className="text-dark fw-bold text-hover-primary">{formatTime(booking.bookingTime)}</span>
-                          </td>
-                          <td>
-                            <span className="badge badge-success">{booking.rideStatus}</span>
+                            <span className="badge badge-warning">{booking.rideStatus}</span>
                           </td>
                         </tr>
                       ))

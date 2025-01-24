@@ -1,5 +1,6 @@
 import React, { FC, useState, useEffect } from 'react';
 import axios from 'axios';
+import * as XLSX from 'xlsx';
 
 interface Booking {
   bookingId: number;
@@ -9,6 +10,8 @@ interface Booking {
   contact: string;
   bookingStatus: string;
   bookingDate: string;
+  bookingTime: string;
+  driverMobile: string;
 }
 
 const AllBookings: FC = () => {
@@ -21,31 +24,6 @@ const AllBookings: FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(50);
 
-  // Fetch bookings
-  // useEffect(() => {
-  //   const fetchBookings = async () => {
-  //     try {
-  //       const response = await axios.get('https://cabapi.payplatter.in/api/bookings');
-  //       const formattedBookings = response.data.map((booking: any) => ({
-  //         bookingId: booking.booking_id,
-  //         cabName: booking.cab_name,
-  //         driverName: booking.driver_name,
-  //         passengerName: booking.user_name,
-  //         contact: booking.user_mobile_no,
-  //         bookingStatus: booking.status,
-  //         bookingDate: booking.booking_date,
-  //       }));
-  //       setBookings(formattedBookings);
-  //       setFilteredBookings(formattedBookings);
-  //     } catch (error) {
-  //       console.error('Error fetching bookings:', error);
-  //       alert('Failed to fetch bookings. Please try again later.');
-  //     }
-  //   };
-
-  //   fetchBookings();
-  // }, []);
-
   useEffect(() => {
     const fetchBookings = async () => {
       try {
@@ -55,12 +33,14 @@ const AllBookings: FC = () => {
             bookingId: booking.booking_id,
             cabName: booking.cab_name,
             driverName: booking.driver_name,
+            driverMobile: booking.driver_mobile_no,
             passengerName: booking.user_name,
             contact: booking.user_mobile_no,
             bookingStatus: booking.status.toLowerCase(),
             bookingDate: booking.booking_date,
+            bookingTime: booking.booking_time,
           }))
-          .filter((booking: { bookingStatus: string; }) => booking.bookingStatus !== 'booked'); // Exclude 'booked' status
+          .sort((a: { bookingId: number; }, b: { bookingId: number; }) => b.bookingId - a.bookingId); // Sort by bookingId in descending order
         setBookings(formattedBookings);
         setFilteredBookings(formattedBookings);
       } catch (error) {
@@ -72,19 +52,24 @@ const AllBookings: FC = () => {
     fetchBookings();
   }, []);
 
-  // Handle search input changes
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
     filterBookings(query, statusFilter, fromDate, toDate);
   };
 
-  // Handle Apply Filter
   const handleApplyFilter = () => {
     filterBookings(searchQuery, statusFilter, fromDate, toDate);
   };
 
-  // Filter bookings
+
+  const handleExport = () => {
+    const worksheet = XLSX.utils.json_to_sheet(filteredBookings);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'AllBookings');
+    XLSX.writeFile(workbook, 'AllBookings.xlsx');
+  };
+
   const filterBookings = (search: string, status: string, from: string, to: string) => {
     let filtered = bookings;
 
@@ -115,16 +100,13 @@ const AllBookings: FC = () => {
     setFilteredBookings(filtered);
   };
 
-  // Handle page change
   const handlePageChange = (pageNumber: number) => setCurrentPage(pageNumber);
 
-  // Handle items per page change
   const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setItemsPerPage(Number(e.target.value));
     setCurrentPage(1);
   };
 
-  // Format date
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const day = date.getDate();
@@ -133,7 +115,13 @@ const AllBookings: FC = () => {
     return `${day} ${month} ${year}`;
   };
 
-  // Pagination logic
+  const formatTime = (timeString: string) => {
+    const [hours, minutes] = timeString.split(':');
+    const isPM = parseInt(hours) >= 12;
+    const formattedHours = isPM ? (parseInt(hours) % 12 || 12) : parseInt(hours);
+    return `${formattedHours}:${minutes} ${isPM ? 'PM' : 'AM'}`;
+  };
+
   const totalPages = Math.ceil(filteredBookings.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -146,6 +134,9 @@ const AllBookings: FC = () => {
           <div className="card card-flush">
             <div className="card-header align-items-center py-3 gap-2 gap-md-12">
               <h3 className="card-title">All Bookings</h3>
+              <button className="btn btn-success ms-auto" onClick={handleExport}>
+                Export
+              </button>
             </div>
             <div className="card-header align-items-center gap-2 flex-wrap">
               <div className="d-flex align-items-center flex-grow-1 flex-shrink-0">
@@ -173,14 +164,11 @@ const AllBookings: FC = () => {
                   >
                     <option value="all">All Status</option>
                     <option value="success">Success</option>
-                    <option value="cancelled">cancelled</option>
+                    <option value="cancelled">Cancelled</option>
                     <option value="pending">Pending</option>
                   </select>
                 </div>
-                <button
-                  className="btn btn-primary ms-3"
-                  onClick={handleApplyFilter}
-                >
+                <button className="btn btn-primary ms-3" onClick={handleApplyFilter}>
                   Apply
                 </button>
               </div>
@@ -202,16 +190,18 @@ const AllBookings: FC = () => {
                       <th className="min-w-50px ps-4 rounded-start">Booking ID</th>
                       <th className="min-w-100px">Cab Name</th>
                       <th className="min-w-100px">Driver Name</th>
+                      <th className="min-w-100px">Driver Contact</th>
                       <th className="min-w-100px">Passenger Name</th>
                       <th className="min-w-100px">Contact</th>
                       <th className="min-w-100px">Booking Date</th>
+                      <th className="min-w-100px">Booking Time</th>
                       <th className="min-w-100px">Status</th>
                     </tr>
                   </thead>
                   <tbody>
                     {currentItems.length === 0 ? (
                       <tr>
-                        <td colSpan={7} className="text-center">
+                        <td colSpan={8} className="text-center">
                           No bookings available
                         </td>
                       </tr>
@@ -228,6 +218,9 @@ const AllBookings: FC = () => {
                             <span className="text-dark fw-bold text-hover-primary">{booking.driverName}</span>
                           </td>
                           <td>
+                            <span className="text-dark fw-bold text-hover-primary">{booking.driverMobile}</span>
+                          </td>
+                          <td>
                             <span className="text-dark fw-bold text-hover-primary">{booking.passengerName}</span>
                           </td>
                           <td>
@@ -235,6 +228,9 @@ const AllBookings: FC = () => {
                           </td>
                           <td>
                             <span className="text-dark fw-bold text-hover-primary">{formatDate(booking.bookingDate)}</span>
+                          </td>
+                          <td>
+                            <span className="text-dark fw-bold text-hover-primary">{formatTime(booking.bookingTime)}</span>
                           </td>
                           <td>
                             <span
