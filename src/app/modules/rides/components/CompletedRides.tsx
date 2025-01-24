@@ -132,8 +132,7 @@ const CompletedRides: FC = () => {
                       <th className="min-w-100px">Rate</th>
                       <th className="min-w-100px">Total Paid Amount </th>
                       <th className="min-w-100px">Transaction ID</th>
-                      <th className="min-w-100px">Payment Method</th>
-                      <th className="min-w-100px">Receipt Number</th>
+                     
                       <th className="min-w-100px">Status</th>
                     </tr>
                   </thead>
@@ -166,20 +165,15 @@ const CompletedRides: FC = () => {
                             <span className="text-dark fw-bold text-hover-primary">{ride.readingDifference}</span>
                           </td>
                           <td>
-                            <span className="text-dark fw-bold text-hover-primary">{ride.rate}</span>
+                            <span className="text-dark fw-bold text-hover-primary">{ride.rate} ₹/km</span>
                           </td>
                           <td>
-                            <span className="text-dark fw-bold text-hover-primary">{ride.paidAmount}</span>
+                            <span className="text-dark fw-bold text-hover-primary">₹{ride.paidAmount}</span>
                           </td>
                           <td>
                             <span className="text-dark fw-bold text-hover-primary">{ride.transactionId}</span>
                           </td>
-                          <td>
-                            <span className="text-dark fw-bold text-hover-primary">{ride.paymentMethod}</span>
-                          </td>
-                          <td>
-                            <span className="text-dark fw-bold text-hover-primary">{ride.receiptNumber}</span>
-                          </td>
+                         
                           <td>
                             <span className="badge badge-success">{ride.rideStatus}</span>
                           </td>
