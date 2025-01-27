@@ -1,6 +1,7 @@
 import React, { FC, useState, useEffect } from 'react';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
+import { BACKEND_DOMAIN } from '../../../../apiEndpoints';
 
 interface Ride {
   rideId: number;
@@ -31,7 +32,7 @@ const CompletedRides: FC = () => {
   useEffect(() => {
     const fetchRides = async () => {
       try {
-        const response = await axios.get('https://cabapi.payplatter.in/api/transactions');
+        const response = await axios.get(`${BACKEND_DOMAIN}/api/transactions`);
         const filteredData = response.data.filter(
           (ride: any) =>
             ride.booking_status === 'success' &&

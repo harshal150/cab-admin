@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import axios from 'axios';
+import { BACKEND_DOMAIN } from '../../../../apiEndpoints';
 
 interface Driver {
   id: number;
@@ -39,8 +40,8 @@ const DriversList: FC = () => {
     const fetchDriversAndCabs = async () => {
       try {
         const [driversResponse, cabsResponse] = await Promise.all([
-          axios.get('https://cabapi.payplatter.in/api/drivers'),
-          axios.get('https://cabapi.payplatter.in/api/cars'),
+          axios.get(`${BACKEND_DOMAIN}/api/drivers`),
+          axios.get(`${BACKEND_DOMAIN}/api/cars`),
         ]);
         setDrivers(driversResponse.data);
         setFilteredDrivers(driversResponse.data);
@@ -102,7 +103,7 @@ const DriversList: FC = () => {
         assigned_cab_id: selectedCab ? selectedCab.id : null,
       };
   
-      await axios.post('https://cabapi.payplatter.in/api/drivers', payload);
+      await axios.post(`${BACKEND_DOMAIN}/api/drivers`, payload);
   
       // Trigger refresh to fetch updated data
       setRefresh((prev) => !prev);
@@ -140,7 +141,7 @@ const DriversList: FC = () => {
         assigned_cab_id: selectedCab ? selectedCab.id : null,
       };
   
-      await axios.put(`https://cabapi.payplatter.in/api/drivers/${currentDriver.id}`, payload);
+      await axios.put(`${BACKEND_DOMAIN}/api/drivers/${currentDriver.id}`, payload);
   
       // Trigger refresh to fetch updated data
       setRefresh((prev) => !prev);
@@ -157,7 +158,7 @@ const DriversList: FC = () => {
   const handleDeleteDriver = async (id: number) => {
     try {
       // Call the delete API endpoint with the driver ID
-      await axios.delete(`https://cabapi.payplatter.in/api/drivers/${id}`);
+      await axios.delete(`${BACKEND_DOMAIN}/api/drivers/${id}`);
   
       // Update the state to remove the deleted driver
       setDrivers((prev) => prev.filter((driver) => driver.id !== id));

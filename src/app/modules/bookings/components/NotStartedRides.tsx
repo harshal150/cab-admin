@@ -1,6 +1,7 @@
 import React, { FC, useState, useEffect } from 'react';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
+import { BACKEND_DOMAIN } from '../../../../apiEndpoints';
 
 interface Booking {
   bookingId: number;
@@ -26,7 +27,7 @@ const NotStartedRides: FC = () => {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const response = await axios.get('https://cabapi.payplatter.in/api/bookings');
+        const response = await axios.get(`${BACKEND_DOMAIN}/api/bookings`);
         const formattedBookings = response.data
           .map((booking: any) => ({
             bookingId: booking.booking_id,

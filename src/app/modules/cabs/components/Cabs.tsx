@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import axios from 'axios';
-
+import { BACKEND_DOMAIN } from '../../../../apiEndpoints';
 interface Car {
   id: number;
   name: string;
@@ -33,7 +33,7 @@ const CabsList: FC = () => {
 useEffect(() => {
   const fetchCabs = async () => {
     try {
-      const response = await axios.get('https://cabapi.payplatter.in/api/cars');
+      const response = await axios.get(`${BACKEND_DOMAIN}/api/cars`);
       
       // Map response data to match expected keys
       const transformedCabs = response.data.map((cab: any) => ({
@@ -97,7 +97,7 @@ useEffect(() => {
   // Add new cab
   const handleAddNewCab = async () => {
     try {
-      await axios.post('https://cabapi.payplatter.in/api/cars', newCab);
+      await axios.post(`${BACKEND_DOMAIN}/api/cars`, newCab);
   
       // Trigger refresh
       setRefresh((prev) => !prev);
@@ -128,7 +128,7 @@ useEffect(() => {
     if (!currentCab) return;
   
     try {
-      await axios.put(`https://cabapi.payplatter.in/api/cars/${currentCab.id}`, currentCab);
+      await axios.put(`${BACKEND_DOMAIN}/api/cars/${currentCab.id}`, currentCab);
   
       // Trigger refresh
       setRefresh((prev) => !prev);
@@ -142,7 +142,7 @@ useEffect(() => {
   
   const handleDeleteCar = async (id: number) => {
     try {
-      await axios.delete(`https://cabapi.payplatter.in/api/cars/${id}`);
+      await axios.delete(`${BACKEND_DOMAIN}/api/cars/${id}`);
   
       // Trigger refresh
       setRefresh((prev) => !prev);

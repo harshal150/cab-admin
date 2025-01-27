@@ -2,6 +2,7 @@ import React, { FC, useEffect, useState } from 'react';
 import axios from 'axios';
 import { PageTitle } from '../../../_metronic/layout/core';
 import { useIntl } from 'react-intl';
+import { BACKEND_DOMAIN } from '../../../apiEndpoints';
 
 const DashboardPage: FC = () => {
   const [totalCabs, setTotalCabs] = useState<number>(0);
@@ -14,7 +15,7 @@ const DashboardPage: FC = () => {
 
   const fetchTransactions = async () => {
     try {
-      const response = await axios.get('https://cabapi.payplatter.in/api/transactions');
+      const response = await axios.get(`${BACKEND_DOMAIN}/api/transactions`);
       const transactions = response.data;
 
       const today = new Date();
@@ -49,10 +50,10 @@ const DashboardPage: FC = () => {
     const fetchData = async () => {
       try {
         // Fetch cabs and drivers
-        const cabsResponse = await axios.get('https://cabapi.payplatter.in/api/cars');
+        const cabsResponse = await axios.get(`${BACKEND_DOMAIN}/api/cars`);
         setTotalCabs(cabsResponse.data.length);
 
-        const driversResponse = await axios.get('https://cabapi.payplatter.in/api/drivers');
+        const driversResponse = await axios.get(`${BACKEND_DOMAIN}/api/drivers`);
         setTotalDrivers(driversResponse.data.length);
 
         // Fetch bookings
@@ -71,7 +72,7 @@ const DashboardPage: FC = () => {
 
   const fetchBookings = async () => {
     try {
-      const response = await axios.get('https://cabapi.payplatter.in/api/bookings');
+      const response = await axios.get(`{BACKEND_DOMAIN}/api/bookings`);
       const bookings = response.data;
 
       const today = new Date();
