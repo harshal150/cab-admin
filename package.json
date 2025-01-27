@@ -68,6 +68,7 @@
     "@types/xlsx": "^0.0.36",
     "css-loader": "6.7.1",
     "del": "6.0.0",
+    "env-cmd": "^10.1.0",
     "mini-css-extract-plugin": "2.6.1",
     "prettier": "2.6.2",
     "rtlcss-webpack-plugin": "4.0.7",
@@ -77,11 +78,13 @@
     "webpack-cli": "4.10.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "payplatter": "react-scripts start",
-    "build": "react-scripts build",
+    "start:local": "env-cmd -f .env.local react-scripts start",
+    "start:uat": "env-cmd -f .env.uat react-scripts start",
+    "start:production": "env-cmd -f .env.production react-scripts start",
+    "build:local": "cross-env PORT=3000 env-cmd -f .env.local react-scripts build",
+    "build:uat": "cross-env env-cmd -f .env.uat react-scripts build",
+    "build:production": "cross-env PORT=8080 env-cmd -f .env.production react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
     "lint": "prettier --check .",
     "format": "prettier --write .",
     "rtl": "webpack --config=rtl.config.js"
