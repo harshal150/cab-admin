@@ -30,7 +30,7 @@ const NotStartedRides: FC = () => {
         const response = await axios.get(`${BACKEND_DOMAIN}/api/bookings`);
         const formattedBookings = response.data
           .map((booking: any) => ({
-            bookingId: booking.booking_id,
+            bookingId: Number(booking.booking_id), // Ensure it's a number
             cabName: booking.cab_name,
             driverName: booking.driver_name,
             passengerName: booking.user_name,
@@ -39,18 +39,23 @@ const NotStartedRides: FC = () => {
             bookingTime: booking.booking_time,
             rideStatus: booking.ride_status,
             driverMobile: booking.driver_mobile_no,
+            status: booking.status, // Include status field
           }))
-          .filter((booking: { rideStatus: string }) => booking.rideStatus === 'not started')
-          .sort((a: { bookingId: number }, b: { bookingId: number }) => b.bookingId - a.bookingId); // Sort by latest bookingId
+          .filter(
+            (booking: { rideStatus: string; status: string; }) => booking.rideStatus === 'not started' && booking.status === 'success'
+          ) // Filter both conditions
+          .sort((a: { bookingId: number; }, b: { bookingId: number; }) => b.bookingId - a.bookingId); // Sort in descending order
+  
         setBookings(formattedBookings);
         setFilteredBookings(formattedBookings);
       } catch (error) {
         console.error('Error fetching bookings:', error);
       }
     };
-
+  
     fetchBookings();
   }, []);
+  
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value.toLowerCase();

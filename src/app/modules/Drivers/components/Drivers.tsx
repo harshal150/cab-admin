@@ -11,6 +11,8 @@ interface Driver {
 }
 
 interface Cab {
+  car_id: number;
+  car_name: string;
   id: number;
   name: string;
   status: string;
@@ -93,33 +95,33 @@ const DriversList: FC = () => {
   };
 
   // Add a new driver
-  const handleAddNewDriver = async () => {
-    try {
-      const selectedCab = cabs.find((cab) => cab.name === newDriver.assigned_cab);
-      const payload = {
-        driver_name: newDriver.driver_name,
-        driver_mobile_no: newDriver.driver_mobile_no,
-        status: newDriver.status,
-        assigned_cab_id: selectedCab ? selectedCab.id : null,
-      };
+  // const handleAddNewDriver = async () => {
+  //   try {
+  //     const selectedCab = cabs.find((cab) => cab.name === newDriver.assigned_cab);
+  //     const payload = {
+  //       driver_name: newDriver.driver_name,
+  //       driver_mobile_no: newDriver.driver_mobile_no,
+  //       status: newDriver.status,
+  //       assigned_cab_id: selectedCab ? selectedCab.id : null,
+  //     };
   
-      await axios.post(`${BACKEND_DOMAIN}/api/drivers`, payload);
+  //     await axios.post(`${BACKEND_DOMAIN}/api/drivers`, payload);
   
-      // Trigger refresh to fetch updated data
-      setRefresh((prev) => !prev);
+  //     // Trigger refresh to fetch updated data
+  //     setRefresh((prev) => !prev);
   
-      // Close modal and reset state
-      setShowAddModal(false);
-      setNewDriver({
-        driver_name: '',
-        driver_mobile_no: '',
-        status: 'available',
-        assigned_cab: '',
-      });
-    } catch (error) {
-      console.error('Error adding driver:', error);
-    }
-  };
+  //     // Close modal and reset state
+  //     setShowAddModal(false);
+  //     setNewDriver({
+  //       driver_name: '',
+  //       driver_mobile_no: '',
+  //       status: 'available',
+  //       assigned_cab: '',
+  //     });
+  //   } catch (error) {
+  //     console.error('Error adding driver:', error);
+  //   }
+  // };
   
   
 
@@ -129,30 +131,65 @@ const DriversList: FC = () => {
     setShowEditModal(true);
   };
 
-  const handleUpdateDriver = async () => {
-    if (!currentDriver) return;
-  
-    try {
-      const selectedCab = cabs.find((cab) => cab.name === currentDriver.assigned_cab);
-      const payload = {
-        driver_name: currentDriver.driver_name,
-        driver_mobile_no: currentDriver.driver_mobile_no,
-        status: currentDriver.status,
-        assigned_cab_id: selectedCab ? selectedCab.id : null,
-      };
-  
-      await axios.put(`${BACKEND_DOMAIN}/api/drivers/${currentDriver.id}`, payload);
-  
-      // Trigger refresh to fetch updated data
-      setRefresh((prev) => !prev);
-  
-      // Close modal and reset state
-      setShowEditModal(false);
-      setCurrentDriver(null);
-    } catch (error) {
-      console.error('Error updating driver:', error);
-    }
-  };
+// Add a new driver
+const handleAddNewDriver = async () => {
+  try {
+    // if statmente to check if cabs have legthn> 0
+    // Find the selected cab by matching car_id
+    const selectedCab = cabs.find((cab) => cab.car_id === parseInt(newDriver.assigned_cab));
+    const payload = {
+      driver_name: newDriver.driver_name,
+      driver_mobile_no: newDriver.driver_mobile_no,
+      status: newDriver.status,
+      assigned_cab_id: selectedCab ? selectedCab.car_id : null, // Send car_id instead of name
+    };
+
+    await axios.post(`${BACKEND_DOMAIN}/api/drivers`, payload);
+
+    // Trigger refresh to fetch updated data
+    setRefresh((prev) => !prev);
+
+    // Close modal and reset state
+    setShowAddModal(false);
+    setNewDriver({
+      driver_name: '',
+      driver_mobile_no: '',
+      status: 'available',
+      assigned_cab: '',
+    });
+  } catch (error) {
+    console.error('Error adding driver:', error);
+  }
+};
+
+// Edit driver
+const handleUpdateDriver = async () => {
+  if (!currentDriver) return;
+
+  try {
+    // Find the selected cab by matching car_id
+    const selectedCab = cabs.find((cab) => cab.car_id === parseInt(currentDriver.assigned_cab));
+
+    const payload = {
+      driver_name: currentDriver.driver_name,
+      driver_mobile_no: currentDriver.driver_mobile_no,
+      status: currentDriver.status,
+      assigned_cab_id: selectedCab ? selectedCab.car_id : null, // Send car_id instead of name
+    };
+
+    await axios.put(`${BACKEND_DOMAIN}/api/drivers/${currentDriver.id}`, payload);
+
+    // Trigger refresh to fetch updated data
+    setRefresh((prev) => !prev);
+
+    // Close modal and reset state
+    setShowEditModal(false);
+    setCurrentDriver(null);
+  } catch (error) {
+    console.error('Error updating driver:', error);
+  }
+};
+
   
 
   const handleDeleteDriver = async (id: number) => {
@@ -244,7 +281,12 @@ const DriversList: FC = () => {
                           {driver.status}
                         </span>
                       </td>
-                      <td className="text-dark fw-bold">{driver.assigned_cab}</td>
+                    <td className="text-dark fw-bold">
+  {cabs.find((cab) => cab.car_name === driver.assigned_cab)?.car_name || 'Not Assigned'}
+</td>
+
+
+
                       <td>
                         <button
                           className="btn btn-light-primary btn-sm me-2"
@@ -319,20 +361,19 @@ const DriversList: FC = () => {
                 <div className="mb-3">
                   <label htmlFor="assignedCab">Assigned Cab</label>
                   <select
-                    id="assignedCab"
-                    className="form-select"
-                    value={newDriver.assigned_cab}
-                    onChange={(e) =>
-                      setNewDriver({ ...newDriver, assigned_cab: e.target.value })
-                    }
-                  >
-                    <option value="">Select a Cab</option>
-                    {cabs.map((cab) => (
-                      <option key={cab.id} value={cab.name}>
-                        {cab.name}
-                      </option>
-                    ))}
-                  </select>
+  id="assignedCab"
+  className="form-select"
+  value={newDriver.assigned_cab}
+  onChange={(e) => setNewDriver({ ...newDriver, assigned_cab: e.target.value })}
+>
+  <option value="">Select a Cab</option>
+  {cabs.map((cab) => (
+    <option key={cab.car_id} value={cab.car_id}>
+      {cab.car_name}
+    </option>
+  ))}
+</select>
+
                 </div>
               </div>
               <div className="modal-footer">
@@ -411,23 +452,24 @@ const DriversList: FC = () => {
                 <div className="mb-3">
                   <label htmlFor="editAssignedCab">Assigned Cab</label>
                   <select
-                    id="editAssignedCab"
-                    className="form-select"
-                    value={currentDriver.assigned_cab}
-                    onChange={(e) =>
-                      setCurrentDriver({
-                        ...currentDriver,
-                        assigned_cab: e.target.value,
-                      })
-                    }
-                  >
-                    <option value="">Select a Cab</option>
-                    {cabs.map((cab) => (
-                      <option key={cab.id} value={cab.name}>
-                        {cab.name}
-                      </option>
-                    ))}
-                  </select>
+  id="editAssignedCab"
+  className="form-select"
+  value={currentDriver.assigned_cab}
+  onChange={(e) =>
+    setCurrentDriver({
+      ...currentDriver,
+      assigned_cab: e.target.value,
+    })
+  }
+>
+  <option value="">Select a Cab</option>
+  {cabs.map((cab) => (
+    <option key={cab.car_id} value={cab.car_id}>
+      {cab.car_name}
+    </option>
+  ))}
+</select>
+
                 </div>
               </div>
               <div className="modal-footer">
