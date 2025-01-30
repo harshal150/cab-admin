@@ -8,43 +8,63 @@ const DashboardPage: FC = () => {
   const [totalCabs, setTotalCabs] = useState<number>(0);
   const [totalDrivers, setTotalDrivers] = useState<number>(0);
   const [todaysBookings, setTodaysBookings] = useState<number>(0);
+  console.log(todaysBookings)
   const [upcomingRides, setUpcomingRides] = useState<number>(0);
   const [runningRides, setRunningRides] = useState<number>(0);
   const [todaysCollection, setTodaysCollection] = useState<number>(0);
   const [totalCollection, setTotalCollection] = useState<number>(0);
 
-  const fetchTransactions = async () => {
-    try {
-      const response = await axios.get(`${BACKEND_DOMAIN}/api/transactions`);
-      const transactions = response.data;
+  // const fetchTransactions = async () => {
+  //   try {
+  //     // Fetch bookings data
+  //     const response = await axios.get(`${BACKEND_DOMAIN}/api/bookings`);
+  //     const bookings = response.data;
+  
+  //     console.log("All Bookings from API:", bookings); // Debug: See all bookings
+  
+  //     const today = new Date();
+  //     today.setHours(0, 0, 0, 0); // Set to start of today
+  //     const todayEnd = new Date(today);
+  //     todayEnd.setHours(23, 59, 59, 999); // End of today
+  
+  //     let todaySum = 0;
+  //     let totalSum = 0;
+  
+  //     const filteredBookings = bookings.filter((booking: any) => {
+  //       const bookingDate = new Date(booking.booking_date);
+  //       const localBookingDate = new Date(bookingDate.toISOString().split('T')[0]); // Convert to local date
+  
+  //       const isToday = localBookingDate.getTime() === today.getTime();
+  //       const isSuccess = booking.status === 'success';
+  //       const amount = Number(booking.amount) || 0;
+  
+  
+  //       return isToday && isSuccess;
+  //     });
+  
+  
+  //     filteredBookings.forEach((booking: any) => {
+  //       todaySum += Number(booking.amount) || 0;
+  //     });
+  
+  //     // Calculate total collection (all success bookings)
+  //     bookings.forEach((booking: any) => {
+  //       if (booking.status === 'success') {
+  //         totalSum += Number(booking.amount) || 0;
+  //       }
+  //     });
+  
 
-      const today = new Date();
-      const todayStart = new Date(today);
-      todayStart.setHours(0, 0, 0, 0);
-      const todayEnd = new Date(today);
-      todayEnd.setHours(23, 59, 59, 999);
-
-      let todaySum = 0;
-      let totalSum = 0;
-
-      transactions.forEach((transaction: any) => {
-        const createdDate = new Date(transaction.created_date);
-
-        // Sum today's collection
-        if (createdDate >= todayStart && createdDate <= todayEnd) {
-          todaySum += parseFloat(transaction.amount || '0');
-        }
-
-        // Sum total collection
-        totalSum += parseFloat(transaction.amount || '0');
-      });
-
-      setTodaysCollection(todaySum);
-      setTotalCollection(totalSum);
-    } catch (error) {
-      console.error('Error fetching transactions:', error);
-    }
-  };
+  
+  //     setTodaysCollection(todaySum);
+  //     setTotalCollection(totalSum);
+  //   } catch (error) {
+  //     console.error('Error fetching bookings:', error);
+  //   }
+  // };
+  
+  
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,6 +72,7 @@ const DashboardPage: FC = () => {
         // Fetch cabs and drivers
         const cabsResponse = await axios.get(`${BACKEND_DOMAIN}/api/cars`);
         setTotalCabs(cabsResponse.data.length);
+    
 
         const driversResponse = await axios.get(`${BACKEND_DOMAIN}/api/drivers`);
         setTotalDrivers(driversResponse.data.length);
@@ -60,7 +81,7 @@ const DashboardPage: FC = () => {
         await fetchBookings();
 
         // Fetch transactions for collections
-        await fetchTransactions();
+        // await fetchTransactions();
       } catch (error) {
         console.error('Error fetching data:', error);
         alert('Failed to fetch data. Please try again later.');
@@ -72,45 +93,73 @@ const DashboardPage: FC = () => {
 
   const fetchBookings = async () => {
     try {
-      const response = await axios.get(`{BACKEND_DOMAIN}/api/bookings`);
+      const response = await axios.get(`${BACKEND_DOMAIN}/api/bookings`);
       const bookings = response.data;
-
+  
+      console.log("All Bookings from API:", bookings); // Debugging output
+  
       const today = new Date();
-      const todayStart = new Date(today);
-      todayStart.setHours(0, 0, 0, 0);
+      today.setHours(0, 0, 0, 0); // Start of today in local time
       const todayEnd = new Date(today);
-      todayEnd.setHours(23, 59, 59, 999);
-
+      todayEnd.setHours(23, 59, 59, 999); // End of today
+  
       let todaysCount = 0;
       let upcomingCount = 0;
       let runningCount = 0;
-
+      let todaySum = 0;
+      let totalSum = 0;
+  
       bookings.forEach((booking: any) => {
-        const bookingDate = new Date(booking.booking_date);
-
-        // Count today's bookings with "success" status
-        if (booking.status === 'success' && bookingDate >= todayStart && bookingDate <= todayEnd) {
+        // Convert UTC `booking_date` to local time
+        const bookingDateUTC = new Date(booking.booking_date);
+        const bookingDateLocal = new Date(
+          bookingDateUTC.toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+        ); // Adjust for Indian timezone
+  
+        console.log(`Booking ID: ${booking.booking_id}, Date: ${bookingDateUTC}, LocalDate: ${bookingDateLocal}`);
+  
+        const isToday = bookingDateLocal.getDate() === today.getDate() &&
+                        bookingDateLocal.getMonth() === today.getMonth() &&
+                        bookingDateLocal.getFullYear() === today.getFullYear();
+  
+        const amount = booking.amount ? Number(booking.amount) : 0;
+  
+        // ✅ Count today's successful bookings
+        if (booking.status === 'success' && isToday) {
           todaysCount++;
+          todaySum += amount;
         }
-
-        // Count upcoming rides with "success" status and "not started" ride_status
-        if (booking.status === 'success' && booking.ride_status === 'not started' && bookingDate >= todayStart && bookingDate <= todayEnd) {
+  
+        // ✅ Count today's upcoming rides
+        if (booking.status === 'success' && booking.ride_status === 'not started' && isToday) {
           upcomingCount++;
         }
-
-        // Count running rides with "success" status and "started" ride_status
-        if (booking.status === 'success' && booking.ride_status === 'started') {
+  
+        // ✅ Count running rides
+        if (booking.status === 'success' && booking.ride_status === 'running' && isToday) {
           runningCount++;
         }
+  
+        // ✅ Sum of all successful bookings for total collection
+        if (booking.status === 'success') {
+          totalSum += amount;
+        }
       });
-
+  
+      // Update state values
       setTodaysBookings(todaysCount);
       setUpcomingRides(upcomingCount);
       setRunningRides(runningCount);
+      setTodaysCollection(todaySum);
+      setTotalCollection(totalSum);
+  
+      console.log(`Final Today Collection: ${todaySum}`);
+      console.log(`Final Total Collection: ${totalSum}`);
     } catch (error) {
       console.error('Error fetching bookings:', error);
     }
   };
+  
 
   return (
     <>
@@ -151,17 +200,18 @@ const DashboardPage: FC = () => {
             },
             // New Cards
             {
-              title: "Today's Collection",
-              value: `₹${todaysCollection.toFixed(2)}`,
-              color: 'bg-info', // New color for differentiation
+              title: "Today's bookings Collection",
+              value: `₹${(todaysCollection || 0).toFixed(2)}`, // Ensure it's always a number
+              color: 'bg-info',
               icon: 'bi bi-cash',
             },
             {
-              title: 'Total Collection',
-              value: `₹${totalCollection.toFixed(2)}`,
-              color: 'bg-warning', // New color for differentiation
+              title: 'Total bookings Collection',
+              value: `₹${(totalCollection || 0).toFixed(2)}`, // Ensure it's always a number
+              color: 'bg-warning',
               icon: 'bi bi-wallet',
             },
+            
           ].map((card, index) => (
             <div className="col-lg-2 col-md-3 col-6" key={index}>
               <div
