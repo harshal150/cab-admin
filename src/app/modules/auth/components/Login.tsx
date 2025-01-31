@@ -166,6 +166,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useFormik } from 'formik'
 import axios from 'axios'
 import { useAuth } from '../core/Auth'  // Import useAuth
+import { BACKEND_DOMAIN } from '../../../../apiEndpoints'
 
 interface LoginResponse {
   token: string
@@ -210,7 +211,7 @@ export function Login() {
       setError(null)
 
       try {
-        const response = await axios.post<LoginResponse>('http://localhost:5001/api/admin/login', {
+        const response = await axios.post<LoginResponse>(`${BACKEND_DOMAIN}/api/admin/login`, {
           username: values.username,
           password: values.password,
         })
