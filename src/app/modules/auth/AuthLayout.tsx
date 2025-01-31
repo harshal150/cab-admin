@@ -34,11 +34,11 @@ const AuthLayout = () => {
       <div className='d-flex flex-column flex-column-fluid flex-lg-row'>
         <div className='d-flex flex-center w-lg-50 pt-15 pt-lg-0 px-10'>
           <div className='d-flex flex-center flex-lg-start flex-column'>
-            <a href='#' className='mb-7'>
-              <img alt='Logo' src={toAbsoluteUrl('/media/logos/pay_platter_dark.png')} height='80px' />
+            <a href='#' className='mb-4 bg-white p-3 rounded-1'>
+              <img alt='Logo' src={toAbsoluteUrl('/media/logos/jhansi.png')} height='80px' />
             </a>
 
-            <h2 className='text-white fw-normal m-0'>Powered by Dexpert Systems</h2>
+            {/* <h2 className='text-white fw-normal m-0'>Powered by Dexpert Systems</h2> */}
           </div>
         </div>
 

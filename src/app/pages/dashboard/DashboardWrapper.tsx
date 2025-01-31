@@ -161,6 +161,11 @@ const DashboardPage: FC = () => {
   };
   
 
+  const firstname = localStorage.getItem('first_name')
+  const lastname =  localStorage.getItem('last_name')
+  console.log(firstname)
+  console.log(lastname)
+
   return (
     <>
       <PageTitle breadcrumbs={[]}>Dashboard</PageTitle>

@@ -22,19 +22,19 @@ const SidebarLogo = () => {
         {config.layoutType === 'dark-sidebar' ? (
           <img
             alt='Logo'
-            src={toAbsoluteUrl('/media/logos/pay_platter_dark.png')}
+            src={toAbsoluteUrl('/media/logos/jhansi.png')}
             className='h-25px app-sidebar-logo-default'
           />
         ) : (
           <>
             <img
               alt='Logo'
-              src={toAbsoluteUrl('/media/logos/payplatter_normal_quality.png')}
+              src={toAbsoluteUrl('/media/logos/jhansi.png')}
               className='h-25px app-sidebar-logo-default theme-light-show'
             />
             <img
               alt='Logo'
-              src={toAbsoluteUrl('/media/logos/pay_platter_dark.png')}
+              src={toAbsoluteUrl('/media/logos/jhansi.png')}
               className='h-25px app-sidebar-logo-default theme-dark-show'
             />
           </>
@@ -42,7 +42,7 @@ const SidebarLogo = () => {
 
         <img
           alt='Logo'
-          src={toAbsoluteUrl('/media/logos/pay_platter_dark.png')}
+          src={toAbsoluteUrl('/media/logos/jhansi.png')}
           className='h-20px app-sidebar-logo-minimize'
         />
       </Link>
