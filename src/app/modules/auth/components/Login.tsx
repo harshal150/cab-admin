@@ -247,9 +247,10 @@ console.log(userWithDefaults)
   console.log('Login successful:', userWithDefaults)
 
         console.log('Login successful:', user)
+        
 
         // ✅ Redirect to dashboard after setting user
-        navigate('/dashboard')
+        // navigate('/dashboard')
       } catch (err: any) {
         console.error('Login failed:', err)
         setError('Invalid username or password')
