@@ -192,8 +192,8 @@ const loginSchema = Yup.object().shape({
 })
 
 const initialValues = {
-  username: 'admin@demo.com',
-  password: '1234',
+  username: '',
+  password: '',
 }
 
 export function Login() {
@@ -271,7 +271,7 @@ console.log(userWithDefaults)
     >
       {/* Heading */}
       <div className='text-center mb-11'>
-        <h1 className='text-dark fw-bolder mb-3'>Welcome to PayPlatter</h1>
+        <h1 className='text-dark fw-bolder mb-3'>Welcome to Smart City Jhansi Cab Booking</h1>
         <div className='text-gray-500 fw-semibold fs-6'>Sign in to your space!</div>
       </div>
 

@@ -240,13 +240,13 @@ useEffect(() => {
   >
     Edit
   </button>
-  <button
+  {/* <button
     className="btn btn-light-danger btn-sm"
     onClick={() => handleDeleteCar(cab.id)}
     title="Delete"
   >
     <i className="bi bi-trash"></i>
-  </button>
+  </button> */}
 </td>
 
 
