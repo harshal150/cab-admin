@@ -1,7 +1,10 @@
-import { menus } from '../../../../../myMenus'
+// import { menus } from '../../../../../myMenus'
+import { useMenus } from '../../../../../myMenus'
 import SidebarMenuMain from './SidebarMenuMain'
 
 const SidebarMenu = () => {
+  const menus = useMenus();
+
   return (
     <div className='app-sidebar-menu overflow-hidden flex-column-fluid'>
       <div

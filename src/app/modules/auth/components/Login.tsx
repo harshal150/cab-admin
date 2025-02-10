@@ -176,6 +176,8 @@ interface LoginResponse {
     role: string
     first_name:string
     last_name:string
+    role_name:string
+    role_id:string
   }
 }
 
@@ -222,6 +224,8 @@ export function Login() {
 
         localStorage.setItem('first_name', user.first_name)
         localStorage.setItem('last_name', user.last_name)
+        localStorage.setItem('role_id', user.role_id)
+        localStorage.setItem('role_name', user.role_name)
         
 
         // ✅ Store credentials & token in localStorage

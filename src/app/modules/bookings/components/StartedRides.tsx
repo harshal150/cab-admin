@@ -28,29 +28,33 @@ const StartedRides: FC = () => {
     const fetchTransactions = async () => {
       try {
         const response = await axios.get(`${BACKEND_DOMAIN}/api/transactions`);
+        console.log(response.data)
         const formattedTransactions = response.data
-          .map((transaction: any) => ({
-            bookingId: transaction.booking_id,
-            cabName: transaction.car_name,
-            driverName: transaction.driver_name,
-            driverContact: transaction.driver_mobile_no,
-            passengerName: transaction.user_name,
-            passengerContact: transaction.passenger_contact,
-            bookingDate: transaction.created_date,
-            bookingTime: new Date(transaction.created_at).toLocaleTimeString('en-US', {
-              hour: '2-digit',
-              minute: '2-digit',
-              hour12: true,
-            }),
-            rideStatus: transaction.ride_status,
-            startReading: transaction.start_reading,
-          }))
-          .filter(
-            (transaction: Transaction) =>
-              transaction.startReading !== null &&
-              transaction.endReading === null &&
-              transaction.rideStatus === 'started'
-          ); // Filtering for 'started' rides
+        .map((transaction: any) => ({
+          bookingId: transaction.booking_id,
+          cabName: transaction.car_name,
+          driverName: transaction.driver_name,
+          driverContact: transaction.driver_mobile_no,
+          passengerName: transaction.user_name,
+          passengerContact: transaction.passenger_contact,
+          bookingDate: transaction.created_date,
+          bookingTime: new Date(transaction.created_at).toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          }),
+          rideStatus: transaction.ride_status,
+          startReading: transaction.start_reading,
+          endReading: transaction.end_reading, // Make sure to map this field
+        }))
+        .filter(
+          (transaction: Transaction) =>
+            transaction.startReading !== null &&
+            transaction.endReading === null &&
+            transaction.rideStatus === "running"
+        ); // Filtering for 'started' rides
+      
+          console.log(formattedTransactions)
         setTransactions(formattedTransactions);
         setFilteredTransactions(formattedTransactions);
       } catch (error) {
