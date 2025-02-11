@@ -5,6 +5,8 @@ import { Tables } from '../widgets/components/Tables'
 import { NotStartedRides } from './components/NotStartedRides'
 import {AllBookings} from './components/AllBookings'
 import { StartedRides } from './components/StartedRides'
+import { AllDriverBookings } from './components/AllDriverBookings'
+
 const cabsBreadCrumbs: Array<PageLink> = [
     {
         title: 'allbookings',
@@ -48,6 +50,15 @@ const RidesPage = () => {
                         <>
                             {/* <PageTitle breadcrumbs={invoicesBreadCrumbs}>Tables</PageTitle> */}
                             <StartedRides />
+                        </>
+                    }
+                />
+                <Route
+                    path='alldriverbookings'
+                    element={
+                        <>
+                            {/* <PageTitle breadcrumbs={invoicesBreadCrumbs}>Tables</PageTitle> */}
+                            <AllDriverBookings />
                         </>
                     }
                 />

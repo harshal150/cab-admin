@@ -147,7 +147,7 @@ export const useMenus = () => {
                 name: 'All Bookings',
                 svg_location: 'communication',
                 icon: 'com014',
-                route: 'bookingspage/allbookings',
+                route: 'bookingspage/alldriverbookings',
               },
             ],
           },

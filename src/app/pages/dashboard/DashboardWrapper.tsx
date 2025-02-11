@@ -8,7 +8,7 @@ const DashboardPage: FC = () => {
   const [totalCabs, setTotalCabs] = useState<number>(0);
   const [totalDrivers, setTotalDrivers] = useState<number>(0);
   const [todaysBookings, setTodaysBookings] = useState<number>(0);
-  console.log(todaysBookings)
+  // console.log(todaysBookings)
   const [upcomingRides, setUpcomingRides] = useState<number>(0);
   const [runningRides, setRunningRides] = useState<number>(0);
   const [todaysCollection, setTodaysCollection] = useState<number>(0);
@@ -96,7 +96,7 @@ const DashboardPage: FC = () => {
       const response = await axios.get(`${BACKEND_DOMAIN}/api/bookings`);
       const bookings = response.data;
   
-      console.log("All Bookings from API:", bookings); // Debugging output
+      // console.log("All Bookings from API:", bookings); // Debugging output
   
       const today = new Date();
       today.setHours(0, 0, 0, 0); // Start of today in local time
@@ -116,7 +116,6 @@ const DashboardPage: FC = () => {
           bookingDateUTC.toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
         ); // Adjust for Indian timezone
   
-        console.log(`Booking ID: ${booking.booking_id}, Date: ${bookingDateUTC}, LocalDate: ${bookingDateLocal}`);
   
         const isToday = bookingDateLocal.getDate() === today.getDate() &&
                         bookingDateLocal.getMonth() === today.getMonth() &&
@@ -153,8 +152,8 @@ const DashboardPage: FC = () => {
       setTodaysCollection(todaySum);
       setTotalCollection(totalSum);
   
-      console.log(`Final Today Collection: ${todaySum}`);
-      console.log(`Final Total Collection: ${totalSum}`);
+      // console.log(`Final Today Collection: ${todaySum}`);
+      // console.log(`Final Total Collection: ${totalSum}`);
     } catch (error) {
       console.error('Error fetching bookings:', error);
     }
@@ -163,8 +162,8 @@ const DashboardPage: FC = () => {
 
   const firstname = localStorage.getItem('first_name')
   const lastname =  localStorage.getItem('last_name')
-  console.log(firstname)
-  console.log(lastname)
+  // console.log(firstname)
+  // console.log(lastname)
 
   return (
     <>
